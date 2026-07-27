@@ -2,6 +2,8 @@ const Car= require('../models/Car');
 const Rental= require('../models/Rental');
 const {sequelize}= require('../models/db');
 const { Op, where }= require('sequelize');
+const {builtPagination } = require('../utils/pagination');
+
 
 const getRentals= async (options={})=>{
     const where={};
@@ -34,7 +36,7 @@ const getRentals= async (options={})=>{
             order: [['id', 'DESC']]
         }
     );
-
+    
     const results= rows.map(r=>({
             id: r.id,
             customerId: r.customer_id,
@@ -49,12 +51,13 @@ const getRentals= async (options={})=>{
                 status: r.Car.status,
             }
         }));
-
+    const  totalPages= Math.ceil(count/limit);
+    const pagination= builtPagination(page,totalPages);
     return {
         rentals: results,
-        totalPages: Math.ceil(count/limit),
+        totalPages,
         currentPage: page,
-        
+        pagination,
     };
 }
 

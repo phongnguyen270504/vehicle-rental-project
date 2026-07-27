@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 // const Brand= require("../models/Brand");
 // const CarType= require("../models/CarType");
+const {builtPagination}= require('../utils/pagination')
 const {Op, NUMBER}= require("sequelize");
 
 const getAllCars= async (query={})=>{
@@ -11,7 +12,10 @@ const getAllCars= async (query={})=>{
         // const whereType={};
 
         const page= Math.max(Number(query.page) || 1, 1);
-        const limit= Math.min(Number(query.limit) || 10, 20);
+        const limit = Math.min(
+            Math.max(Number(query.limit) || 10, 1),
+            20
+        );
         const offset= (page-1)*limit;
         const order= query.order === 'asc' ? 'ASC' : 'DESC';
 
@@ -77,11 +81,12 @@ const getAllCars= async (query={})=>{
         }))
 
         const totalPages= Math.ceil(count/limit);
-
+        const pagination=builtPagination(page,totalPages)
         return {
             totalItems: count,
             totalPages,
             currentPage: page,
+            pagination,
             limit,
             cars: result
         };

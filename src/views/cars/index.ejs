@@ -26,23 +26,7 @@
         <h2>Danh sách xe</h2>
             <div class="my-2">
             <form method="GET" action="/cars">
-                <div class="row g-2">
-                    <div class="col-md-10">
-                        <input
-                            type="text"
-                            class="form-control"
-                            name="name"
-                            placeholder="Nhập tên xe..."
-                            value="<%= currentName || '' %>"
-                        >
-                    </div>
-
-                    <div class="col-md-2 d-grid">
-                        <button class="btn btn-primary">
-                            Tìm kiếm
-                        </button>
-                    </div>
-                </div>
+                <%- include('../partials/search-bar',{keyword: currentName, search_name: 'name'}) %>
             </form>
         </div>
         <div class="car-list row">
@@ -73,6 +57,7 @@
              {
                  totalPages, 
                 currentPage,
+                pagination,
                 }) %>
 </main>
     <%- include("../partials/footer.ejs") %>

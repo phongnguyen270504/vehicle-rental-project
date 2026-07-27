@@ -38,7 +38,65 @@
             <h2>Quản lý người dùng</h2>
             <!-- Content for managing users -->
             <div class="table-box">
+                <div class="my-2">
+            <form method="GET" action="/admin/manage-users" class="row g-3">
+                <%- include('../partials/search-bar', { keyword: keyword, search_name: 'keyword' }) %>
+                <div class="col-md-2">
+                    <select class="form-select" name="role">
+                        <option value="">Tất cả vai trò</option>
+
+                        <option value="admin"
+                            <%= query.role === 'admin' ? 'selected' : '' %>>
+                            Admin
+                        </option>
+
+                        <option value="customer"
+                            <%= query.role === 'customer' ? 'selected' : '' %>>
+                            Customer
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select" name="status">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="active"
+                            <%= query.status === 'active' ? 'selected' : '' %>>
+                            Active
+                        </option>
+                        <option value="inactive"
+                            <%= query.status === 'inactive' ? 'selected' : '' %>>
+                            Inactive
+                        </option>
+                    </select>
+                </div>
+                 <div class="col-md-3">
+                    <select class="form-select" name="order">
+                        <option value="desc" <%= query.order === "desc" ? "selected" : "" %>>
+                            Mới nhất
+                        </option>
+
+                        <option value="asc" <%= query.order === "asc" ? "selected" : "" %>>
+                            Cũ nhất
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-primary w-100">
+                        Lọc
+                    </button>
+                </div>
+               
+                <div class="col-md-2">
+                    <a href="/admin/manage-users"
+                    class="btn btn-secondary w-100">
+                        Đặt lại
+                    </a>
+                </div>
+
+            </form>
+        </div>
             <table class="table align-middle">
+                
                 <thead>
                     <tr>
                         <th>Id</th>
@@ -62,6 +120,14 @@
                     <% }); %>
                 </tbody>
             </table>
+             </div>
+            <!-- Pagination -->
+            <%- include('../partials/pagination', 
+            { totalPages, 
+            currentPage,
+            pagination
+            }) %>
+        </div>
         </div>
     </div>
 </body>

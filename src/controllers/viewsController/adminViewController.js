@@ -29,6 +29,7 @@ const manageCarsPage = async (req, res) => {
             totalPages: results.totalPages,
             currentPage: results.currentPage,
             currentName: req.query.name || "",
+            pagination: results.pagination,
         });
      } catch (err) {
         console.error(err);
@@ -38,14 +39,15 @@ const manageCarsPage = async (req, res) => {
 
 const manageRentalsPage= async (req, res) => {
    try {
-        const results = await rentalService.getRentals(req.query);
+        const results = await rentalService.getRentals({...req.query,limit: Number(req.query.limit) || 2});
         res.render('admin/manage-rentals.ejs',{
             title: 'Quản lý đơn thuê',
             limit: results.limit,
             query: req.query,
             rentals: results.rentals,
             totalPages: results.totalPages,
-            currentPage: results.currentPage
+            currentPage: results.currentPage,
+            pagination: results.pagination,
         });
    } catch (err) {
         console.error(err);
@@ -55,11 +57,19 @@ const manageRentalsPage= async (req, res) => {
 
 const manageUsersPage = async (req, res) => {
     try {
-        const users = await userService.getAllUsers();
-
+        const keyword = req.query.keyword || '';
+        const results = await userService.getAllUsers({ ...req.query, keyword });
+        
         res.render('admin/manage-users.ejs', {
             title: 'Quản lý người dùng',
-            users
+            users: results.users,
+            totalItems: results.total,
+            limit: results.limit,
+            currentPage: results.currentPage,
+            totalPages: results.totalPages,
+            pagination: results.pagination,
+            query: req.query,
+            keyword,
         });
     } catch (err) {
         console.error(err);

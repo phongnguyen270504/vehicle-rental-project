@@ -16,6 +16,7 @@ const indexPage= async (req,res)=>{
             currentPage: results.currentPage,
             totalItems: results.totalItems,
             currentName: req.query.name || '',
+            pagination: results.pagination,
         });
     } catch (err) {
         console.error(err);

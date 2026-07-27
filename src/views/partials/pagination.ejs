@@ -8,21 +8,27 @@
             }
         %>
         <% 
-                const maxButtons = 5;
-                let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
-                let endPage = Math.min(totalPages, startPage + maxButtons - 1);
-                if (endPage - startPage + 1 < maxButtons) {
-                    startPage = Math.max(1, endPage - maxButtons + 1);
-                }
+                // const maxButtons = 5;
+                // let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+                // let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+                // if (endPage - startPage + 1 < maxButtons) {
+                //     startPage = Math.max(1, endPage - maxButtons + 1);
+                // }
             %>
             <div class="pagination page-buttons">
-            <% if (currentPage > 1) { %>
+            <% if (pagination.hasPrevious) { %>
                 <a href="?<%= buildQuery(currentPage - 1)  %>" class="btn btn-sm btn-outline-secondary">Prev</a>
             <% } %>
-            <% for (let pageNum = startPage; pageNum <= endPage; pageNum++) {
+            <%# for (let pageNum = startPage; pageNum <= endPage; pageNum++) {
                 const isActive = pageNum === currentPage ? 'active' : '';
             %>
-                <a href="?<%= buildQuery(pageNum) %>" class="btn btn-sm btn-outline-primary <%= isActive %>"><%= pageNum %></a>
+           <% for (const page of pagination.pages) { 
+            const isActive = (page === currentPage ? 'active' : '');%>
+                <a
+                    href="?<%= buildQuery(page) %>"
+                    class="btn btn-sm btn-outline-primary <%= isActive %>">
+                    <%= page %>
+                </a>
             <% } %>
             <% if (currentPage < totalPages) { %>
                 <a href="?<%= buildQuery(currentPage + 1) %>" class="btn btn-sm btn-outline-secondary">Next</a>
