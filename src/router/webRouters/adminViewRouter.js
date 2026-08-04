@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const adminViewController = require('../../controllers/viewsController/adminViewController');
+const adminViewController = require('../../controllers/viewsController/admin/adminViewController');
 
 router.get('/dashboard', adminViewController.dashboardPage);
 
