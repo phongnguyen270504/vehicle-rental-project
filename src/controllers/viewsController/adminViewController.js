@@ -77,4 +77,6 @@ const manageUsersPage = async (req, res) => {
     }
 }
 
-module.exports = {dashboardPage, manageCarsPage, manageRentalsPage, manageUsersPage};
+
+
+module.exports = {dashboardPage, manageCarsPage, manageRentalsPage, manageUsersPage,};

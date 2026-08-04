@@ -1,4 +1,22 @@
-const rentalService= require('../../services/rentalService');
+const rentalService= require('../../../services/rentalService');
+
+const manageRentalsPage= async (req, res) => {
+   try {
+        const results = await rentalService.getRentals({...req.query,limit: Number(req.query.limit) || 2});
+        res.render('admin/manage-rentals.ejs',{
+            title: 'Quản lý đơn thuê',
+            limit: results.limit,
+            query: req.query,
+            rentals: results.rentals,
+            totalPages: results.totalPages,
+            currentPage: results.currentPage,
+            pagination: results.pagination,
+        });
+   } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error' });
+   }
+}
 
 const rentalDetailPage= async (req, res) => {
     try {
@@ -36,7 +54,7 @@ const cancelRental= async (req,res)=>{
         const rentalId= req.params.id;
         const user= req.session.user ? req.session.user : null;
         if(!user){
-            res.status(401).json({message: 'Unauthorized'});
+            res.status(401).json({message: 'Cần đăng nhập để hủy đơn thuê'});
             return;
         }
         await rentalService.rentalCancel(rentalId, user);
@@ -53,7 +71,7 @@ const completeRental= async (req,res)=>{
         const rentalId= req.params.id;
         const user= req.session.user ? req.session.user : null;
         if(!user){
-            res.status(401).json({message: 'Unauthorized'});
+            res.status(401).json({message: 'Cần đăng nhập để hoàn thành đơn thuê'});
             return;
         }
         await rentalService.rentalComplete(rentalId, user);

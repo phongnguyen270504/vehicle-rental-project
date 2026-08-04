@@ -50,7 +50,18 @@ const getAllUsers = async (options = {}) => {
     return result;
    }
    
-
+const getUserById = async (id) => {
+    const user = await User.findByPk(id, {
+        attributes: ['id', 'fullname', 'phone', 'email', 'role', 'user_status', 'created_at', 'updated_at'],
+    });
+    if(!user) {
+        const err = new Error('Không tìm thấy người dùng');
+        err.statusCode = 404;
+        throw err;
+    }
+    return user;
+}
 module.exports = {
     getAllUsers,
+    getUserById,
 }
