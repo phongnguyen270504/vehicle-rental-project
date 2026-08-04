@@ -13,6 +13,8 @@ router.post('/:id/complete', authSessionMiddleware.isAdmin ,rentalViewController
 
 router.get('/:id', authSessionMiddleware.isAdmin, rentalViewController.rentalDetailPage);
 
+router.get('/', authSessionMiddleware.isAdmin, rentalViewController.manageRentalsPage);
+
 
 
 module.exports = router;
