@@ -1,5 +1,6 @@
 const carService= require('../../../services/carService');
 const rentalService= require('../../../services/rentalService');
+const fs= require('fs/promises');
 const indexPage= async (req,res)=>{
     try {
         const results = await carService.getAllCars({
@@ -96,10 +97,17 @@ const createCarPage= async (req,res)=>{
 
 const createCar= async (req,res)=>{
     try {
-        const image= req.file ? "/uploads/cars/" + req.file.filename: null;
-        const car = await carService.createCar({...req.body, image});
+        if(req.file){
+            req.body.image= "/uploads/cars/" + req.file.filename;
+        }
+        const car = await carService.createCar(req.body);
         res.redirect('/admin/cars');
     } catch (err) {
+        if (req.file) {
+            await fs.unlink(req.file.path).catch((unlinkErr) => {
+                console.error('Lỗi khi xóa file tạm thời:', unlinkErr);
+            });
+        }
         console.error(err);
         res.status(err.statusCode || 500).json({ message: err.message || 'Server error' });
     }

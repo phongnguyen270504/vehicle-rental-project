@@ -41,7 +41,7 @@ const confirmRental = async (req, res) =>{
             return;
         }
         await rentalService.confirmRental(rentalId, admin);
-        res.redirect('/admin/manage-rentals');
+        res.redirect('/admin/rentals');
     }
     catch (err) {
         console.error(err);
@@ -58,7 +58,7 @@ const cancelRental= async (req,res)=>{
             return;
         }
         await rentalService.rentalCancel(rentalId, user);
-        res.redirect('/admin/manage-rentals');
+        res.redirect('/admin/rentals');
     }
     catch (err) {
         console.error(err);
@@ -75,7 +75,7 @@ const completeRental= async (req,res)=>{
             return;
         }
         await rentalService.rentalComplete(rentalId, user);
-        res.redirect('/admin/manage-rentals');
+        res.redirect('/admin/rentals');
     }
     catch (err) {
         console.error(err);

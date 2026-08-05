@@ -1,5 +1,7 @@
 const { Op } = require('sequelize');
 const User = require('../models/User');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 const { builtPagination } = require('../utils/pagination');
 
 const getAllUsers = async (options = {}) => {
@@ -61,7 +63,81 @@ const getUserById = async (id) => {
     }
     return user;
 }
+
+const createUser = async (userData) => {
+    const {fullname, phone,email, password, confirmpassword} = userData;
+    if(!fullname || !phone || !email || !password || !confirmpassword){
+        const err = new Error('Thiếu thông tin người dùng');
+        err.statusCode = 400;
+        throw err;
+    }
+    const existingUser = await User.findOne({
+        where:{[Op.or]:{
+            email: userData.email,
+            phone: userData.phone
+        }}
+    });
+
+    if(password !== confirmpassword){
+        const err = new Error('Mật khẩu không khớp');
+        err.statusCode = 400;
+        throw err;
+    }
+
+    const hashpass= await bcrypt.hash(password, 10);
+
+    if (existingUser) {
+        const err = new Error('Người dùng đã tồn tại');
+        err.statusCode = 409;
+        throw err;
+    }
+    const result = await User.create({
+        fullname,
+        phone,
+        email,
+        hashpass,
+        role: 'customer',
+        user_status: 'active'
+    });
+    const user ={
+        id: result.id,
+        fullname: result.fullname,
+        phone: result.phone,
+        email: result.email,
+        role: result.role,
+        user_status: result.user_status,
+        created_at: result.created_at,
+        updated_at: result.updated_at
+    }
+    return user;
+}
+
+const updateUser = async (id, userData) => {
+    const user = await User.findByPk(id);
+    if(!user) {
+        const err = new Error('Không tìm thấy người dùng');
+        err.statusCode = 404;
+        throw err;
+    }
+    await user.update(userData);
+    return user;
+}
+
+const deleteUser = async (id) => {
+    const user = await User.findByPk(id);
+    if(!user) {
+        const err = new Error('Không tìm thấy người dùng');
+        err.statusCode = 404;
+        throw err;
+    }
+    await user.destroy();
+    return user;
+}
+
 module.exports = {
     getAllUsers,
     getUserById,
+    createUser,
+    updateUser,
+    deleteUser
 }

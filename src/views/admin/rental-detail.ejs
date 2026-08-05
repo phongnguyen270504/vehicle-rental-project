@@ -74,19 +74,19 @@
          <p><strong>Tổng cộng:</strong> <%= rental.totalPrice %> VND</p>
          <div>
             <% if(rental.status ==='pending') { %>
-            <form action="/rentals/<%= rental.id %>/confirm" method="POST" style="display:inline-block;">
+            <form action="/admin/rentals/<%= rental.id %>/confirm" method="POST" style="display:inline-block;">
                 <button class="btn btn-primary">
                 Duyệt đơn hàng
             </button>
             </form>
-            <form action="/rentals/<%= rental.id %>/cancel" method="POST" style="display:inline-block;">
+            <form action="/admin/rentals/<%= rental.id %>/cancel" method="POST" style="display:inline-block;">
                 <button class="btn btn-danger">
                 Hủy đơn hàng
             </button>
             </form>
             <% } %>
             <% if(rental.status === 'active')  { %>
-            <form action="/rentals/<%= rental.id %>/complete" method="POST" style="display:inline-block;">
+            <form action="/admin/rentals/<%= rental.id %>/complete" method="POST" style="display:inline-block;">
                 <button class="btn btn-primary">
                     Hoàn thành đơn hàng
                 </button>
