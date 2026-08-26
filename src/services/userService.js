@@ -66,7 +66,7 @@ const getUserById = async (id) => {
 
 const createUser = async (userData) => {
     const {fullname, phone,email, password, confirmpassword} = userData;
-    if(!fullname || !phone || !email || !password || !confirmpassword){
+    if(!fullname || !email || !password || !confirmpassword){
         const err = new Error('Thiếu thông tin người dùng');
         err.statusCode = 400;
         throw err;
@@ -78,6 +78,12 @@ const createUser = async (userData) => {
         }}
     });
 
+    if (existingUser) {
+        const err = new Error('Người dùng đã tồn tại');
+        err.statusCode = 409;
+        throw err;
+    }
+
     if(password !== confirmpassword){
         const err = new Error('Mật khẩu không khớp');
         err.statusCode = 400;
@@ -86,11 +92,7 @@ const createUser = async (userData) => {
 
     const hashpass= await bcrypt.hash(password, 10);
 
-    if (existingUser) {
-        const err = new Error('Người dùng đã tồn tại');
-        err.statusCode = 409;
-        throw err;
-    }
+    
     const result = await User.create({
         fullname,
         phone,
@@ -119,7 +121,19 @@ const updateUser = async (id, userData) => {
         err.statusCode = 404;
         throw err;
     }
-    await user.update(userData);
+
+    const updateData={};
+    if(userData.fullname) {
+        updateData.fullname= userData.fullname;
+    }
+    if(userData.phone) {
+        updateData.phone= userData.phone;
+    }
+    if(userData.email) {
+        updateData.email= userData.email;
+    }
+    
+    await user.update(updateData);
     return user;
 }
 
@@ -130,7 +144,9 @@ const deleteUser = async (id) => {
         err.statusCode = 404;
         throw err;
     }
-    await user.destroy();
+
+    user.user_status = 'inactive';
+    await user.save();
     return user;
 }
 

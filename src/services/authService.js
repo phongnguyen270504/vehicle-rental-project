@@ -27,6 +27,11 @@ const loginUser= async (email, password) => {
         err.statusCode = 401;
         throw err;
     }
+    if (user.user_status === 'inactive') {
+        const err = new Error('Tài khoản của bạn đã bị khóa hoặc không hoạt động');
+        err.statusCode = 403;
+        throw err;
+    }
    
     return user; 
 }

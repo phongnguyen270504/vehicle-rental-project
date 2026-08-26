@@ -49,13 +49,17 @@ const User= sequelize.define('User',{
             isIn: [['active', 'locked', 'inactive']]
         }
     },
-
-
+    created_at:{
+        type: DataTypes.DATE,
+        allowNull:true,
+    },
+    updated_at:{
+        type: DataTypes.DATE,
+        allowNull:true,
+    }
 },{
     tableName:'users',
     timestamps: false,
-    createdAt: 'created_at',
-    updatedAt: 'updated_at',
 })
 
 module.exports=User;

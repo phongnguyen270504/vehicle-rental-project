@@ -37,8 +37,22 @@ const createUser = async (req, res) => {
     }
 }
 
+const updateUser = async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const updatedUser = await userService.updateUser(userId, req.body);
+        res.json(updatedUser);
+    }
+    catch (err) {
+        res.status(err.statusCode || 500).json({
+            message: err.message || 'Server error'
+        });
+    }
+}
+
 module.exports = {
     getAllUsers,
     getUserById,
-    createUser
+    createUser,
+    updateUser
 }
