@@ -29,4 +29,7 @@ const verifyRole= (roles) => {
     }
 }
 
-module.exports= {verifyToken,verifyRole};
+module.exports= {
+    verifyToken,
+    verifyRole
+};

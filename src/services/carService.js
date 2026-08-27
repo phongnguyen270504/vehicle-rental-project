@@ -1,5 +1,5 @@
 const Car = require("../models/Car");
-const fs = require('fs');
+const fs = require('fs/promises');
 const path = require('path');
 // const Brand= require("../models/Brand");
 // const CarType= require("../models/CarType");
@@ -115,7 +115,6 @@ const getCarById= async (id)=>{
 }
 
 const createCar = async (data)=>{
-    const {name, brand, type, price_per_day, image}= data;
 
     // if(!name || !brand || !type || !price_per_day)
     // {
@@ -152,7 +151,7 @@ const createCar = async (data)=>{
     //     throw err;
     // }
 
-    const price = Number(price_per_day);
+    const price = Number(data.price_per_day);
 
     if (isNaN(price) || price <= 0) {
         const err = new Error('Giá thuê không hợp lệ');
@@ -161,10 +160,10 @@ const createCar = async (data)=>{
     }
 
     const car= await Car.create({
-        name,
-        brand,
-        type,
-        price_per_day,
+        name: data.name,
+        brand: data.brand,
+        type: data.type,
+        price_per_day: data.price_per_day,
         status: "available",
         image: data.image || null
     })
@@ -177,6 +176,8 @@ const createCar = async (data)=>{
         brand: car.brand,
         type: car.type
     })
+ 
+   
 }
 
 const updateCar= async (id,data)=>{
@@ -300,6 +301,11 @@ const deleteCar=async (id)=>{
         const err = new Error('Không tìm thấy xe');
         err.statusCode = 404;
         throw err;
+    }
+    const oldImage = car.image;
+    if(oldImage){
+        const oldImagePath = path.join(__dirname, "..", "public", oldImage);
+        await fs.unlink(oldImagePath).catch(() => {});
     }
 
     await car.destroy();

@@ -87,4 +87,10 @@ const deleteCar = async(req,res)=>{
 }
 
 
-module.exports={getAllCars,getCarById,createCar,updateCar,deleteCar,};
+module.exports={
+    getAllCars,
+    getCarById,
+    createCar,
+    updateCar,
+    deleteCar
+};

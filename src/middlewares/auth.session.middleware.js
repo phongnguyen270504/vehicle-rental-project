@@ -9,10 +9,14 @@ const isLogin = (req, res, next) => {
 
 const isAdmin = (req, res, next) => {
     if (!req.session.user || req.session.user.role !== 'admin') {
-        res.redirect('/cars');
+        res.redirect('/auth/login');
         return;
     }
+    
      return next();
 };
 
-module.exports = { isLogin, isAdmin };
+module.exports = { 
+    isLogin, 
+    isAdmin 
+};

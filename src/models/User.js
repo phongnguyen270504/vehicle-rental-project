@@ -42,20 +42,24 @@ const User= sequelize.define('User',{
         }
     },
     user_status:{
-        type: DataTypes.ENUM('active','locked','inactive'),
+        type: DataTypes.ENUM('active','inactive'),
         allowNull:false,
         defaultValue: 'active',
         validate: {
-            isIn: [['active', 'locked', 'inactive']]
+            isIn: [['active', 'inactive']]
         }
     },
-
-
+    created_at:{
+        type: DataTypes.DATE,
+        allowNull:true,
+    },
+    updated_at:{
+        type: DataTypes.DATE,
+        allowNull:true,
+    }
 },{
     tableName:'users',
     timestamps: false,
-    createdAt: 'created_at',
-    updatedAt: 'updated_at',
 })
 
 module.exports=User;

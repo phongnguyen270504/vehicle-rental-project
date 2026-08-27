@@ -14,9 +14,11 @@ const userRouter= require('./router/userRoute');
 
 const carViewRouter= require('./router/webRouters/carViewRouter');
 const authViewRouter= require('./router/webRouters/authViewRouter');
-const adminViewRouter= require('./router/webRouters/adminViewRouter');
+const adminViewRouter= require('./router/webRouters/admin/indexRouter');
 const rentalViewRouter= require('./router/webRouters/rentalViewRouter');;
-
+const carAdminViewRouter= require('./router/webRouters/admin/carViewRouter');
+const rentalAdminViewRouter= require('./router/webRouters/admin/rentalViewRouter');
+const userAdminViewRouter= require('./router/webRouters/admin/userViewRouter');
 const app = express();
 
 app.set('view engine', 'ejs');
@@ -44,7 +46,12 @@ app.get('/', (req, res) => {
 });
 app.use('/cars', carViewRouter);
 app.use('/auth', authViewRouter);
-app.use('/admin', authSessionsMiddleware.isLogin, authSessionsMiddleware.isAdmin, adminViewRouter);
+
+app.use('/admin', 
+    authSessionsMiddleware.isLogin, 
+    authSessionsMiddleware.isAdmin, 
+    adminViewRouter);
+
 app.use('/rentals', authSessionsMiddleware.isLogin, rentalViewRouter);
 
 app.use((req, res) => {

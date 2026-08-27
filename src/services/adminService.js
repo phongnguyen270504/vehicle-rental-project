@@ -18,4 +18,6 @@ const getDashboardData = async () => {
         totalRevenue };
 }
 
-module.exports={getDashboardData}
+module.exports={
+    getDashboardData,
+}

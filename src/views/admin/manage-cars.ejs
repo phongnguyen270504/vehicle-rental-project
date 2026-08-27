@@ -40,13 +40,13 @@
         <div class="content">
         <h1>Quản lý xe</h1>
        
-        <a href="/cars/create" class="btn btn-primary mb-3">
+        <a href="/admin/cars/create" class="btn btn-primary mb-3">
             + Thêm xe
         </a>
         <!-- Table content will go here -->
          <div class="table-box">
              <div class="my-2">
-            <form method="GET" action="/admin/manage-cars">
+            <form method="GET" action="/admin/cars">
                 <%- include('../partials/search-bar', { keyword: currentName, search_name: 'name' }) %>
             </form>
         </div>
@@ -104,10 +104,10 @@
 
                         <td>
 
-                            <a href="/cars/<%= car.id %>/update" class="btn btn-warning btn-sm">
+                            <a href="/admin/cars/<%= car.id %>/update" class="btn btn-warning btn-sm">
                                 Edit
                             </a>
-                            <form action="/cars/<%= car.id %>/delete" method="POST" style="display:inline;" onsubmit="return confirmDelete();">
+                            <form action="/admin/cars/<%= car.id %>/delete" method="POST" style="display:inline;" onsubmit="return confirmDelete();">
                                 <button class="btn btn-danger btn-sm" type="submit">
                                     Delete
                                 </button>

@@ -36,14 +36,14 @@
         <div class="content">
             <h1><%= title %></h1>
             <div class="form-box">
-                <form action="/cars/create" method="POST" enctype="multipart/form-data">
+                <form action="/admin/cars/create" method="POST" enctype="multipart/form-data">
                     <div class="mb-3">
                         <label for="name" class="form-label">Tên xe</label>
                         <input type="text" class="form-control" id="name" name="name" required>
                     </div>
                     <div class="mb-3">
                         <label for="price" class="form-label">Giá thuê (VND/ngày)</label>
-                        <input type="number" class="form-control" id="price" name="price_per_day" required>
+                        <input type="number" class="form-control" id="price" name="price_per_day" step="any" required>
                     </div>
                     <div class="mb-3">
                         <label for="brand" class="form-label">Hãng xe</label>

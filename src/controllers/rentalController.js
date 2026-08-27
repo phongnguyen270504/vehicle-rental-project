@@ -110,4 +110,12 @@ const rentalComplete= async (req, res)=>{
     }
 }
 
-module.exports= {createRental, getAllRentals, getAllRentalsByUser,getRentalById,confirmRental,rentalCancel, rentalComplete};
+module.exports= {
+    createRental, 
+    getAllRentals, 
+    getAllRentalsByUser,
+    getRentalById,
+    confirmRental,
+    rentalCancel, 
+    rentalComplete
+};

@@ -27,6 +27,11 @@ const loginUser= async (email, password) => {
         err.statusCode = 401;
         throw err;
     }
+    if (user.user_status !== 'active') {
+        const err = new Error('Tài khoản của bạn đã bị khóa hoặc không hoạt động');
+        err.statusCode = 403;
+        throw err;
+    }
    
     return user; 
 }
@@ -101,4 +106,8 @@ const generateToken = (user) => {
     );
 }
 
-module.exports = { loginUser , registerUser, generateToken};
+module.exports = { 
+    loginUser , 
+    registerUser, 
+    generateToken
+};

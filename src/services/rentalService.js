@@ -168,19 +168,19 @@ const confirmRental= async (rentalId,admin)=>{
 }
 
 const rentalCancel= async (rentalId,user)=>{ 
-    if(rental.customer_id !== user.id || user.role !== 'admin'){
-        const err= new Error('Bạn chỉ có thể hủy đơn thuê của chính mình');
-        err.statusCode=403;
-        throw err;
-    }
-
     const rental= await Rental.findByPk(rentalId);
+
     if(!rental){
         const err= new Error('Đơn thuê không tồn tại');
         err.statusCode=404;
         throw err;
     }
-   
+
+    if(rental.customer_id !== user.id || user.role !== 'admin'){
+        const err= new Error('Bạn chỉ có thể hủy đơn thuê của chính mình');
+        err.statusCode=403;
+        throw err;
+    }
 
     if(rental.status !=='pending'){
         const err= new Error('Không thể hủy đơn thuê không ở trạng thái chờ duyệt');

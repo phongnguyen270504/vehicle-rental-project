@@ -8,7 +8,7 @@
     integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" 
     crossorigin="anonymous">
     <link rel="stylesheet" href="/styles/style.css">
-    <title>Quản lý người dùng</title>
+    <title><%= title %></title>
     <style>
         body{
             margin:0;
@@ -35,7 +35,10 @@
     <div class="main">
         <%- include('../partials/topbar') %>
         <div class="content">
-            <h2>Quản lý người dùng</h2>
+            <h2><%= title %></h2>
+            <a href="/admin/users/create" class="btn btn-primary mb-3">
+                Thêm người dùng
+            </a>
             <!-- Content for managing users -->
             <div class="table-box">
                 <div class="my-2">
@@ -116,6 +119,28 @@
                             <td><%= user.email %></td>
                             <td><%= user.role %></td>
                             <td><%= user.user_status %></td>
+                            <td>
+                                <a href="/admin/users/<%= user.id %>" class="btn btn-info btn-sm">
+                                    Chi tiết
+                                </a>
+                                <a href="/admin/users/<%= user.id %>/edit" class="btn btn-warning btn-sm">
+                                    Sửa
+                                </a>
+                                <% if (user.user_status === 'active') { %>
+                                    <form action="/admin/users/<%= user.id %>/delete" method="POST" style="display:inline;">
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc chắn muốn xóa người dùng này?');">
+                                            Xóa
+                                        </button>
+                                    </form>
+                                <% } %>
+                                <% if (user.user_status === 'inactive') { %>
+                                    <form action="/admin/users/<%= user.id %>/restore" method="POST" style="display:inline;">
+                                        <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Bạn có chắc chắn muốn khôi phục người dùng này?');">
+                                            Khôi phục
+                                        </button>
+                                    </form>
+                                <% } %>
+                            </td>
                         </tr>
                     <% }); %>
                 </tbody>
