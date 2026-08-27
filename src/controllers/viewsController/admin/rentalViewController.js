@@ -84,4 +84,10 @@ const completeRental= async (req,res)=>{
 }
 
 
-module.exports= {rentalDetailPage, confirmRental, cancelRental, completeRental,manageRentalsPage};
+module.exports= {
+    rentalDetailPage, 
+    confirmRental, 
+    cancelRental, 
+    completeRental,
+    manageRentalsPage,
+};

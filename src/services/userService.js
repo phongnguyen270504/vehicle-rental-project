@@ -78,7 +78,7 @@ const createUser = async (userData) => {
         }}
     });
 
-    if (existingUser) {
+    if (existingUser && existingUser.id !== userData.id) {
         const err = new Error('Người dùng đã tồn tại');
         err.statusCode = 409;
         throw err;
@@ -138,14 +138,37 @@ const updateUser = async (id, userData) => {
 }
 
 const deleteUser = async (id) => {
+  const user = await User.findByPk(id);
+  if (!user) {
+    const err = new Error('Không tìm thấy người dùng');
+    err.statusCode = 404;
+    throw err;
+  }
+  if (user.user_status === 'inactive') {
+    const err = new Error('Người dùng đã bị vô hiệu hóa');
+    err.statusCode = 400;
+    throw err;
+  }
+    return changeStatusUser(user, 'inactive');
+}
+
+const restoreUser = async (id) => {
     const user = await User.findByPk(id);
-    if(!user) {
+    if (!user) {
         const err = new Error('Không tìm thấy người dùng');
         err.statusCode = 404;
         throw err;
     }
+    if (user.user_status !== 'inactive') {
+        const err = new Error('Người dùng không ở trạng thái bị vô hiệu hóa');
+        err.statusCode = 400;
+        throw err;
+    }
+    return changeStatusUser(user, 'active');
+}
 
-    user.user_status = 'inactive';
+const changeStatusUser = async (user, status) => {
+    user.user_status = status;
     await user.save();
     return user;
 }
@@ -155,5 +178,6 @@ module.exports = {
     getUserById,
     createUser,
     updateUser,
-    deleteUser
+    deleteUser,
+    restoreUser,
 }

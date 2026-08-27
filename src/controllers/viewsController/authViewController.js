@@ -91,4 +91,10 @@ const register= async (req,res)=>{
     }
 }
 
-module.exports={loginPage, login, logout, registerPage, register};
+module.exports={
+    loginPage, 
+    login, 
+    logout, 
+    registerPage, 
+    register,
+};

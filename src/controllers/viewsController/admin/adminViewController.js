@@ -15,4 +15,6 @@ const dashboardPage = async (req, res) => {
 
 
 
-module.exports = {dashboardPage};
+module.exports = {
+    dashboardPage,
+};

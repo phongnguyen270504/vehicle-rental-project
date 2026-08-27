@@ -100,4 +100,25 @@ const deleteUser = async (req, res) => {
     }
 }
 
-module.exports = {UserDetailPage, manageUsersPage, createUserPage, createUser, updateUserPage, updateUser, deleteUser};
+const restoreUser = async (req, res) => {
+    try {
+        const userId = req.params.id;
+        await userService.restoreUser(userId);
+        res.redirect('/admin/users');
+    }
+    catch (err) {
+        console.error(err);
+        res.status(err.statusCode || 500).json({ message: err.message || 'Server error' });
+    }
+}
+
+module.exports = {
+    UserDetailPage, 
+    manageUsersPage, 
+    createUserPage, 
+    createUser, 
+    updateUserPage, 
+    updateUser, 
+    deleteUser,
+    restoreUser
+};

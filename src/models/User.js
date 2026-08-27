@@ -42,11 +42,11 @@ const User= sequelize.define('User',{
         }
     },
     user_status:{
-        type: DataTypes.ENUM('active','locked','inactive'),
+        type: DataTypes.ENUM('active','inactive'),
         allowNull:false,
         defaultValue: 'active',
         validate: {
-            isIn: [['active', 'locked', 'inactive']]
+            isIn: [['active', 'inactive']]
         }
     },
     created_at:{

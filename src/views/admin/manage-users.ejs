@@ -126,11 +126,21 @@
                                 <a href="/admin/users/<%= user.id %>/edit" class="btn btn-warning btn-sm">
                                     Sửa
                                 </a>
-                                <form action="/admin/users/<%= user.id %>/delete" method="POST" style="display:inline;">
-                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc chắn muốn xóa người dùng này?');">
-                                        Xóa
-                                    </button>
-                                </form>
+                                <% if (user.user_status === 'active') { %>
+                                    <form action="/admin/users/<%= user.id %>/delete" method="POST" style="display:inline;">
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc chắn muốn xóa người dùng này?');">
+                                            Xóa
+                                        </button>
+                                    </form>
+                                <% } %>
+                                <% if (user.user_status === 'inactive') { %>
+                                    <form action="/admin/users/<%= user.id %>/restore" method="POST" style="display:inline;">
+                                        <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Bạn có chắc chắn muốn khôi phục người dùng này?');">
+                                            Khôi phục
+                                        </button>
+                                    </form>
+                                <% } %>
+                            </td>
                         </tr>
                     <% }); %>
                 </tbody>

@@ -14,5 +14,6 @@ router.get('/:id', userViewController.UserDetailPage);
 router.get('/', userViewController.manageUsersPage);
 
 router.post('/:id/delete', userViewController.deleteUser);
+router.post('/:id/restore', userViewController.restoreUser);
 
 module.exports = router;
