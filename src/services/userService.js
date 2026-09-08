@@ -3,6 +3,7 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { builtPagination } = require('../utils/pagination');
+const { validateCreateUser, validateUpdateUser } = require('../validations/validateUser');
 
 const getAllUsers = async (options = {}) => {
     const where = {};
@@ -65,34 +66,30 @@ const getUserById = async (id) => {
 }
 
 const createUser = async (userData) => {
-    const {fullname, phone,email, password, confirmpassword} = userData;
-    if(!fullname || !email || !password || !confirmpassword){
-        const err = new Error('Thiếu thông tin người dùng');
-        err.statusCode = 400;
-        throw err;
+
+    const fullname= userData.fullname?.trim();
+    const phone= userData.phone?.trim();
+    const email= userData.email?.trim();
+    const password= userData.password;
+    
+    const conditions ={
+        email,
+    }
+    if(phone){
+        conditions.phone= phone;
     }
     const existingUser = await User.findOne({
-        where:{[Op.or]:{
-            email: userData.email,
-            phone: userData.phone
-        }}
+        where:{[Op.or]: conditions}
     });
 
-    if (existingUser && existingUser.id !== userData.id) {
+    if (existingUser) {
         const err = new Error('Người dùng đã tồn tại');
         err.statusCode = 409;
         throw err;
     }
 
-    if(password !== confirmpassword){
-        const err = new Error('Mật khẩu không khớp');
-        err.statusCode = 400;
-        throw err;
-    }
-
     const hashpass= await bcrypt.hash(password, 10);
 
-    
     const result = await User.create({
         fullname,
         phone,
@@ -115,25 +112,48 @@ const createUser = async (userData) => {
 }
 
 const updateUser = async (id, userData) => {
-    const user = await User.findByPk(id);
+    const user = await User.findOne({
+        where: {
+            id,
+        },
+    });
     if(!user) {
         const err = new Error('Không tìm thấy người dùng');
         err.statusCode = 404;
         throw err;
     }
 
-    const updateData={};
-    if(userData.fullname) {
-        updateData.fullname= userData.fullname;
-    }
-    if(userData.phone) {
-        updateData.phone= userData.phone;
-    }
-    if(userData.email) {
-        updateData.email= userData.email;
-    }
+
     
+    const fullname = userData.fullname?.trim();
+    const phone = userData.phone?.trim() || null;
+    const email = userData.email?.trim();
+    
+    const duplicateUser = await User.findOne({
+        where: {
+            [Op.or]: [
+                { email },
+                ...(phone ? [{ phone }] : [])
+            ],
+            id: {
+                [Op.ne]: id
+            }
+        }
+    });
+
+    if (duplicateUser) {
+        const err = new Error('Email hoặc số điện thoại đã tồn tại');
+        err.statusCode = 409;
+        throw err;
+    }
+    const updateData = {
+        fullname,
+        phone,
+        email,
+    };
+
     await user.update(updateData);
+
     return user;
 }
 

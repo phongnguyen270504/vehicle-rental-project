@@ -31,16 +31,28 @@
     <%- include('../partials/sidebar') %>
     <div class="main">
         <%- include('../partials/topbar') %>
-        <div class="content">
+        <div class="container mt-4">
             <h2>Chi tiết đơn hàng</h2>
-            <div class="rental-info">
-                <p><strong>Mã đơn hàng:</strong> <%= rental.id %></p>
-                <p><strong>Ngày bắt đầu:</strong> <%= rental.startDate ? rental.startDate.toLocaleDateString() : 'N/A' %></p>
-                <p><strong>Ngày kết thúc:</strong> <%= rental.endDate ? rental.endDate.toLocaleDateString() : 'N/A' %></p>
-                <p><strong>Trạng thái:</strong><span class="badge bg-primary"><%= rental.status %></span></p>
+            <div class="card p-1 mb-3">
+                <div class="card-body">
+                    <div class="mb-3">
+                <p>
+                    <strong>Mã đơn hàng:</strong> <%= rental.id %>
+                </p>
+                </div>
+                <div class="mb-3"> 
+                    <p><strong>Ngày bắt đầu:</strong> <%= rental.startDate ? rental.startDate.toLocaleDateString() : 'N/A' %></p>
+                </div>
+                <div class="mb-3"> 
+                    <p><strong>Ngày kết thúc:</strong> <%= rental.endDate ? rental.endDate.toLocaleDateString() : 'N/A' %></p>
+                </div>
+                <div class="mb-3">
+                    <p><strong>Trạng thái:</strong><span class="badge bg-primary"><%= rental.status %></span></p>
+                </div>
+                </div>
             </div>
-            <div class="table-box">
-            <table class="table align-middle">
+            <div class="table-box table-responsive">
+            <table class="table table-hover align-middle">
                 <thead>
                     <tr>
                         <th>Image</th>
@@ -70,8 +82,11 @@
                     <!-- ROW -->
                 </tbody>
             </table>
+            <div class="mb-3">
+                <p><strong>Tổng cộng:</strong> <%= rental.totalPrice %> VND</p>
+            </div>
          </div>
-         <p><strong>Tổng cộng:</strong> <%= rental.totalPrice %> VND</p>
+         
          <div>
             <% if(rental.status ==='pending') { %>
             <form action="/admin/rentals/<%= rental.id %>/confirm" method="POST" style="display:inline-block;">

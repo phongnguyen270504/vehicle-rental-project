@@ -1,5 +1,6 @@
 const userService = require('../../../services/userService');
 const {formatDate} = require('../../../utils/date');
+const { validateCreateUser, validateUpdateUser } = require('../../../validations/validateUser');
 const UserDetailPage = async (req, res) => {
     try {
         const userId = req.params.id;
@@ -41,6 +42,9 @@ const createUserPage = async (req, res) => {
     try {
         res.render('users/create-user.ejs', {
             title: 'Tạo người dùng mới',
+            errorMessage: null,
+            errors: {},
+            userData: {}
         });
     }
     catch (err) {
@@ -50,13 +54,28 @@ const createUserPage = async (req, res) => {
 }
 
 const createUser= async (req, res) =>{
+    const userData = req.body;
+    const errors = validateCreateUser(userData);
+    if (Object.keys(errors).length > 0) {
+        return res.status(400).render('users/create-user.ejs', {
+            title: 'Tạo người dùng mới',
+            errorMessage: 'Dữ liệu không hợp lệ',
+            errors: errors,
+            userData: req.body
+        });
+    }
     try {
-        const user = await userService.createUser(req.body);
-        res.redirect('/admin/users')
+        await userService.createUser(req.body);
+        return res.redirect('/admin/users')
     }
     catch (err) {
         console.error(err);
-        res.status(err.statusCode || 500).json({ message: err.message || 'Server error' });
+        res.status(err.statusCode || 500).render('users/create-user.ejs', {
+            title: 'Tạo người dùng mới',
+            errorMessage: err.message || 'Server error',
+            errors: err.errors || {},
+            userData: userData
+        });
     }
 }
 
@@ -76,15 +95,30 @@ const updateUserPage = async (req, res) =>{
 }
 
 const updateUser = async (req, res) =>{
+    const userData = req.body;
+    const errors = validateUpdateUser(userData);
+    if (Object.keys(errors).length > 0) {
+        return res.status(400).render('users/update-user.ejs', {
+            title: 'Cập nhật thông tin người dùng',
+            errorMessage: 'Dữ liệu không hợp lệ',
+            errors: errors,
+            editUser: { ...userData, id: req.params.id }
+        });
+    }
     try{
         const userId = req.params.id;
-        const updatedUser = await userService.updateUser(userId, req.body);
+        await userService.updateUser(userId, req.body);
         
-        res.redirect(`/admin/users/${userId}/edit`);
+        return res.redirect(`/admin/users/${userId}/edit`);
     }
     catch (err) {
         console.error(err);
-        res.status(err.statusCode || 500).json({ message: err.message || 'Server error' });
+        return res.status(err.statusCode || 500).render('users/update-user.ejs', {
+            title: 'Cập nhật thông tin người dùng',
+            errorMessage: err.message || 'Server error',
+            errors: err.errors || {},
+            editUser: { ...userData, id: req.params.id }
+        });
     }
 }
 

@@ -34,28 +34,48 @@
         <%- include('../partials/topbar') %>
         <div class="content">
             <h2><%= title %></h2>
+            <div class="error-message">
+                <% if (errorMessage) { %>
+                    <div class="alert alert-danger"><%= errorMessage %></div>
+                <% } %>
+            </div>
        <!-- Form thêm người dùng -->
         <div class="form-box">
             <form action="/admin/users/create" method="POST">
                 <div class="mb-3">
                     <label for="username" class="form-label">Tên người dùng</label>
-                    <input type="text" class="form-control" id="fullname" name="fullname" required>
+                    <input type="text" class="form-control" id="fullname" name="fullname" value="<%= userData.fullname || '' %>" >
+                    <% if (errors.fullname) { %>
+                        <div class="text-danger"><%= errors.fullname %></div>
+                    <% } %>
                 </div>
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="email" name="email" required>
+                    <input type="email" class="form-control" id="email" name="email" value="<%= userData.email || '' %>" >
+                    <% if (errors.email) { %>
+                        <div class="text-danger"><%= errors.email %></div>
+                    <% } %>
                 </div>
                  <div class="mb-3">
                     <label for="phone" class="form-label">Số điện thoại</label>
-                    <input type="text" class="form-control" id="phone" name="phone">
+                    <input type="text" class="form-control" id="phone" name="phone" value="<%= userData.phone || '' %>" >
+                    <% if (errors.phone) { %>
+                        <div class="text-danger"><%= errors.phone %></div>
+                    <% } %>
                 </div>
                 <div class="mb-3">
                     <label for="password" class="form-label">Mật khẩu</label>
-                    <input type="password" class="form-control" id="password" name="password" required>
+                    <input type="password" class="form-control" id="password" name="password">
+                    <% if (errors.password) { %>
+                        <div class="text-danger"><%= errors.password %></div>
+                    <% } %>
                 </div>
                 <div class="mb-3">
                     <label for="confirmpassword" class="form-label">Xác nhận mật khẩu</label>
-                    <input type="password" class="form-control" id="confirmpassword" name="confirmpassword" required>
+                    <input type="password" class="form-control" id="confirmpassword" name="confirmpassword" >
+                    <% if (errors.confirmpassword) { %>
+                        <div class="text-danger"><%= errors.confirmpassword %></div>
+                    <% } %>
                 </div>
                 <button type="submit" class="btn btn-primary">Tạo người dùng</button>
             </form> 

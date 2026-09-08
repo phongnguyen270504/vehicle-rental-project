@@ -27,6 +27,8 @@
             display:flex;
 
             flex-direction:column;
+
+            min-width: 0;
         }
         </style>
 </head>
@@ -42,7 +44,7 @@
             <!-- Content for managing users -->
             <div class="table-box">
                 <div class="my-2">
-            <form method="GET" action="/admin/manage-users" class="row g-3">
+            <form method="GET" action="/admin/users" class="row g-3">
                 <%- include('../partials/search-bar', { keyword: keyword, search_name: 'keyword' }) %>
                 <div class="col-md-2">
                     <select class="form-select" name="role">
@@ -90,7 +92,7 @@
                 </div>
                
                 <div class="col-md-2">
-                    <a href="/admin/manage-users"
+                    <a href="/admin/users"
                     class="btn btn-secondary w-100">
                         Đặt lại
                     </a>
@@ -98,6 +100,7 @@
 
             </form>
         </div>
+        <div class="table-responsive">
             <table class="table align-middle">
                 
                 <thead>
@@ -105,7 +108,7 @@
                         <th>Id</th>
                         <th>Full Name</th>
                         <th>Phone</th>
-                        <th>Email</th>
+                        <th class="email">Email</th>
                         <th>Role</th>
                         <th>Status</th>
                     </tr>
@@ -116,7 +119,7 @@
                             <td><%= user.id %></td>
                             <td><%= user.fullname %></td>
                             <td><%= user.phone %></td>
-                            <td><%= user.email %></td>
+                            <td class="email"><%= user.email %></td>
                             <td><%= user.role %></td>
                             <td><%= user.user_status %></td>
                             <td>
@@ -145,6 +148,7 @@
                     <% }); %>
                 </tbody>
             </table>
+        </div>
              </div>
             <!-- Pagination -->
             <%- include('../partials/pagination', 

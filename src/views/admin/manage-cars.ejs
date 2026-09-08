@@ -29,6 +29,8 @@
             display:flex;
 
             flex-direction:column;
+
+            min-width: 0;
         }
 
         </style>
@@ -50,6 +52,7 @@
                 <%- include('../partials/search-bar', { keyword: currentName, search_name: 'name' }) %>
             </form>
         </div>
+        <div class="table-responsive border rounded">
             <table class="table align-middle">
                 <thead>
                     <tr>
@@ -121,6 +124,7 @@
                     <!-- ROW -->
                 </tbody>
             </table>
+            </div>
          </div>
          <%- include('../partials/pagination', 
          { totalPages, 
