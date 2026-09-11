@@ -1,6 +1,6 @@
 const userService = require('../../../services/userService');
 const {formatDate} = require('../../../utils/date');
-const { validateCreateUser, validateUpdateUser } = require('../../../validations/validateUser');
+const { validateUpdateCar } = require('../../../validations/validateCars');
 const UserDetailPage = async (req, res) => {
     try {
         const userId = req.params.id;
@@ -85,7 +85,9 @@ const updateUserPage = async (req, res) =>{
         const user = await userService.getUserById(userId);
         res.render('users/update-user.ejs', {
             title: 'Cập nhật thông tin người dùng',
-            editUser: user
+            editUser: user,
+            errorMessage: null,
+            errors: {}
         });
     }
     catch (err) {
@@ -95,16 +97,7 @@ const updateUserPage = async (req, res) =>{
 }
 
 const updateUser = async (req, res) =>{
-    const userData = req.body;
-    const errors = validateUpdateUser(userData);
-    if (Object.keys(errors).length > 0) {
-        return res.status(400).render('users/update-user.ejs', {
-            title: 'Cập nhật thông tin người dùng',
-            errorMessage: 'Dữ liệu không hợp lệ',
-            errors: errors,
-            editUser: { ...userData, id: req.params.id }
-        });
-    }
+
     try{
         const userId = req.params.id;
         await userService.updateUser(userId, req.body);
@@ -117,7 +110,7 @@ const updateUser = async (req, res) =>{
             title: 'Cập nhật thông tin người dùng',
             errorMessage: err.message || 'Server error',
             errors: err.errors || {},
-            editUser: { ...userData, id: req.params.id }
+            editUser: { ...req.body, id: req.params.id }
         });
     }
 }

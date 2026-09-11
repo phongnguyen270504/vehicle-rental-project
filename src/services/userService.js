@@ -3,7 +3,6 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { builtPagination } = require('../utils/pagination');
-const { validateCreateUser, validateUpdateUser } = require('../validations/validateUser');
 
 const getAllUsers = async (options = {}) => {
     const where = {};
@@ -68,15 +67,14 @@ const getUserById = async (id) => {
 const createUser = async (userData) => {
 
     const fullname= userData.fullname?.trim();
-    const phone= userData.phone?.trim();
+    const phone= userData.phone?.trim() || null;
     const email= userData.email?.trim();
     const password= userData.password;
     
-    const conditions ={
-        email,
-    }
+    const conditions =[];
+    conditions.push({ email });
     if(phone){
-        conditions.phone= phone;
+        conditions.push({ phone });
     }
     const existingUser = await User.findOne({
         where:{[Op.or]: conditions}
@@ -117,6 +115,7 @@ const updateUser = async (id, userData) => {
             id,
         },
     });
+
     if(!user) {
         const err = new Error('Không tìm thấy người dùng');
         err.statusCode = 404;
@@ -129,28 +128,43 @@ const updateUser = async (id, userData) => {
     const phone = userData.phone?.trim() || null;
     const email = userData.email?.trim();
     
-    const duplicateUser = await User.findOne({
-        where: {
-            [Op.or]: [
-                { email },
-                ...(phone ? [{ phone }] : [])
-            ],
-            id: {
-                [Op.ne]: id
-            }
-        }
-    });
-
-    if (duplicateUser) {
-        const err = new Error('Email hoặc số điện thoại đã tồn tại');
-        err.statusCode = 409;
-        throw err;
+        const conditions = [];
+    if(userData.email !== undefined) {
+        conditions.push({ email });
     }
+
+    if(userData.phone !== undefined) {
+        if(phone) {
+            conditions.push({ phone });
+        }
+    }
+
+        let duplicateUser = null;
+
+        if (conditions.length > 0) {
+            duplicateUser = await User.findOne({
+                where: {
+                    [Op.or]: conditions,
+                    id: {
+                        [Op.ne]: id
+                    }
+                }
+            });
+        }
+        if (duplicateUser) {
+            const err = new Error('Người dùng đã tồn tại');
+            err.statusCode = 409;
+            throw err;
+        }
     const updateData = {
-        fullname,
-        phone,
-        email,
+       fullname,
+       email
     };
+
+
+    if (userData.phone !== undefined) {
+        updateData.phone = phone;
+    }
 
     await user.update(updateData);
 

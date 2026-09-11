@@ -35,19 +35,33 @@
         <div class="content">
             <h2><%= title %></h2>
             <!-- Form cập nhật người dùng -->
+            <div class="error-message">
+                <% if (errorMessage) { %>
+                    <div class="alert alert-danger"><%= errorMessage %></div>
+                <% } %>
+            </div>
             <div class="form-box">
                 <form action="/admin/users/<%= editUser.id %>/edit" method="POST">
                     <div class="mb-3">
                         <label for="username" class="form-label">Tên người dùng</label>
                         <input type="text" class="form-control" id="fullname" name="fullname" value="<%= editUser.fullname %>" required>
+                     <% if (errors.fullname) { %>
+                                <div class="text-danger"><%= errors.fullname %></div>
+                            <% } %>
                     </div>
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
                         <input type="email" class="form-control" id="email" name="email" value="<%= editUser.email %>" required>
+                     <% if (errors.email) { %>
+                                <div class="text-danger"><%= errors.email %></div>
+                            <% } %>
                     </div>
                     <div class="mb-3">
                         <label for="phone" class="form-label">Số điện thoại</label>
                         <input type="text" class="form-control" id="phone" name="phone" value="<%= editUser.phone %>">
+                        <% if (errors.phone) { %>
+                            <div class="text-danger"><%= errors.phone %></div>
+                        <% } %>
                     </div>
                     <button type="submit" class="btn btn-primary">Cập nhật người dùng</button>
                 </form>

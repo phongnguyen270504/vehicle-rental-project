@@ -44,14 +44,14 @@
             <form action="/admin/users/create" method="POST">
                 <div class="mb-3">
                     <label for="username" class="form-label">Tên người dùng</label>
-                    <input type="text" class="form-control" id="fullname" name="fullname" value="<%= userData.fullname || '' %>" >
+                    <input type="text" class="form-control" id="fullname" name="fullname" value="<%= userData.fullname || '' %>" required>
                     <% if (errors.fullname) { %>
                         <div class="text-danger"><%= errors.fullname %></div>
                     <% } %>
                 </div>
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="email" name="email" value="<%= userData.email || '' %>" >
+                    <input type="email" class="form-control" id="email" name="email" value="<%= userData.email || '' %>" required>
                     <% if (errors.email) { %>
                         <div class="text-danger"><%= errors.email %></div>
                     <% } %>
@@ -65,7 +65,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="password" class="form-label">Mật khẩu</label>
-                    <input type="password" class="form-control" id="password" name="password">
+                    <input type="password" class="form-control" id="password" name="password" required>
                     <% if (errors.password) { %>
                         <div class="text-danger"><%= errors.password %></div>
                     <% } %>

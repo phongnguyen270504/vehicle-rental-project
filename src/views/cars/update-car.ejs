@@ -38,18 +38,30 @@
                     <div class="mb-3">
                         <label for="name" class="form-label">Tên xe</label>
                         <input type="text" class="form-control" id="name" name="name" value="<%= result.name %>" >
+                        <% if (errors.name) { %>
+                            <div class="text-danger"><%= errors.name %></div>
+                        <% } %>
                     </div>
                     <div class="mb-3">
                         <label for="price" class="form-label">Giá thuê (VND/ngày)</label>
-                        <input type="number" class="form-control" id="price" name="price_per_day" value="<%= result.pricePerDay %>" required>
+                        <input type="number" class="form-control" id="price" name="price_per_day" value="<%= result.pricePerDay %>" >
+                        <% if (errors.price_per_day) { %>
+                            <div class="text-danger"><%= errors.price_per_day %></div>
+                        <% } %>
                     </div>
                     <div class="mb-3">
                         <label for="brand" class="form-label">Hãng xe</label>
                         <input type="text" class="form-control" id="brand" name="brand" value="<%= result.brand %>">
+                        <% if (errors.brand) { %>
+                            <div class="text-danger"><%= errors.brand %></div>
+                        <% } %>
                     </div>
                     <div class="mb-3">
                         <label for="type" class="form-label">Loại xe</label>
                         <input type="text" class="form-control" id="type" name="type" value="<%= result.type %>">
+                        <% if (errors.type) { %>
+                            <div class="text-danger"><%= errors.type %></div>
+                        <% } %>
                     </div>
                         <div class="mb-3">
                             <label for="status" class="form-label">Trạng thái</label>
@@ -58,6 +70,9 @@
                                 <option value="rented" <%= result.status === 'rented' ? 'selected' : '' %>>Đang thuê</option>
                                 <option value="maintenance" <%= result.status === 'maintenance' ? 'selected' : '' %>>Bảo trì</option>
                             </select>
+                            <% if (errors.status) { %>
+                                <div class="text-danger"><%= errors.status %></div>
+                            <% } %>
                         </div>
                     <div class="mb-3">
                         <label for="image" class="form-label">Ảnh xe</label>

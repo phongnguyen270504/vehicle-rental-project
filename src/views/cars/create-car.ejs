@@ -39,19 +39,25 @@
                 <form action="/admin/cars/create" method="POST" enctype="multipart/form-data">
                     <div class="mb-3">
                         <label for="name" class="form-label">Tên xe</label>
-                        <input type="text" class="form-control" id="name" name="name" required>
+                        <input type="text" class="form-control" id="name" name="name" value="<%= carData.name %>" >
+                        <% if(errors && errors.name) { %>
+                            <div class="text-danger"><%= errors.name %></div>
+                        <% } %>
                     </div>
                     <div class="mb-3">
                         <label for="price" class="form-label">Giá thuê (VND/ngày)</label>
-                        <input type="number" class="form-control" id="price" name="price_per_day" step="any" required>
+                        <input type="number" class="form-control" id="price" name="price_per_day" step="any" value="<%= carData.price_per_day %>" >
+                        <% if(errors && errors.price_per_day) { %>
+                            <div class="text-danger"><%= errors.price_per_day %></div>
+                        <% } %>
                     </div>
                     <div class="mb-3">
                         <label for="brand" class="form-label">Hãng xe</label>
-                        <input type="text" class="form-control" id="brand" name="brand">
+                        <input type="text" class="form-control" id="brand" name="brand" value="<%= carData.brand %>" >
                     </div>
                     <div class="mb-3">
                         <label for="type" class="form-label">Loại xe</label>
-                        <input type="text" class="form-control" id="type" name="type">
+                        <input type="text" class="form-control" id="type" name="type" value="<%= carData.type %>" >
                     </div>
                     <div class="mb-3">
                         <label for="image" class="form-label">Ảnh xe</label>

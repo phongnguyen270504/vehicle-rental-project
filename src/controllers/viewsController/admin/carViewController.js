@@ -1,5 +1,8 @@
 const carService= require('../../../services/carService');
 const rentalService= require('../../../services/rentalService');
+
+const { validateUpdateCar, validateCreateCar } = require('../../../validations/validateCars');
+
 const fs= require('fs/promises');
 const indexPage= async (req,res)=>{
     try {
@@ -15,7 +18,7 @@ const indexPage= async (req,res)=>{
             totalItems: results.totalItems,
             totalPages: results.totalPages,
             currentPage: results.currentPage,
-            currentName: req.query.name || "",
+            query: req.query,
             pagination: results.pagination,
         });
      } catch (err) {
@@ -87,7 +90,10 @@ const bookingCar= async (req,res)=>{
 const createCarPage= async (req,res)=>{
     try {
         res.render('cars/create-car.ejs',{
-            title: 'Thêm xe mới'
+            title: 'Thêm xe mới',
+            errors: {},
+            errorMessage: null,
+            carData: {}
         });
     } catch (err) {
         console.error(err);
@@ -96,7 +102,17 @@ const createCarPage= async (req,res)=>{
 }
 
 const createCar= async (req,res)=>{
+    const errors = validateCreateCar(req.body);
+    if (Object.keys(errors).length > 0) {
+        return res.status(400).render('cars/create-car.ejs', {
+            title: 'Thêm xe mới',
+            errors: errors,
+            errorMessage: 'Dữ liệu không hợp lệ',
+            carData: req.body
+        });
+    }
     try {
+        console.log("Dữ liệu từ form:", req.body);
         if(req.file){
             req.body.image= "/uploads/cars/" + req.file.filename;
         }
@@ -131,7 +147,9 @@ const updateCarPage= async (req,res)=>{
         console.log("Dữ liệu xe:", car);
         res.render('cars/update-car.ejs',{
             result: car,
-            title: 'Cập nhật thông tin xe'
+            title: 'Cập nhật thông tin xe',
+            errors: {},
+            errorMessage: null
         });
     } catch (err) {
         console.error(err);
@@ -140,9 +158,19 @@ const updateCarPage= async (req,res)=>{
 }
 
 const updateCar= async (req,res) =>{
+     const errors = validateUpdateCar(req.body);
+        if (Object.keys(errors).length > 0) {
+           return res.status(400).render('cars/update-car.ejs', {
+                result: {...req.body, id: req.params.id},
+                title: 'Cập nhật thông tin xe',
+                errors: errors,
+                errorMessage:  'Dữ liệu không hợp lệ'
+            });
+        }
     try {
         const id= Number(req.params.id);
         const file= req.file;
+       
         if(file){
             req.body.image= "/uploads/cars/" + file.filename;
         }

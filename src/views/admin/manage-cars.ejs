@@ -48,8 +48,83 @@
         <!-- Table content will go here -->
          <div class="table-box">
              <div class="my-2">
-            <form method="GET" action="/admin/cars">
-                <%- include('../partials/search-bar', { keyword: currentName, search_name: 'name' }) %>
+            <form method="GET" action="/admin/cars" class="row g-3">
+                <%- include('../partials/search-bar', { keyword: query.name, search_name: 'name' }) %>
+                <div class="col-sm-4">
+                    <select class="form-select " name="status">
+                        <option value="">Tất cả trạng thái</option>
+
+                        <option value="available"
+                            <%= query.status === 'available' ? 'selected' : '' %>>
+                            Available
+                        </option>
+
+                        <option value="rented"
+                            <%= query.status === 'rented' ? 'selected' : '' %>>
+                            Rented
+                        </option>
+
+                        <option value="maintenance"
+                            <%= query.status === 'maintenance' ? 'selected' : '' %>>
+                            Maintenance
+                        </option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <select class="form-select" name="type">
+                        <option value="">Tất cả loại xe</option>
+
+                        <option value="sedan"
+                            <%= query.type === 'sedan' ? 'selected' : '' %>>
+                            Sedan
+                        </option>
+
+                        <option value="suv"
+                            <%= query.type === 'suv' ? 'selected' : '' %>>
+                            SUV
+                        </option>
+
+                        <option value="truck"
+                            <%= query.type === 'truck' ? 'selected' : '' %>>
+                            Truck
+                        </option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <select name="brand" id="brand" class="form-select">
+                        <option value="">Tất cả thương hiệu</option>
+                        <!-- Brand options will be populated dynamically -->
+                         <option value="Toyota" <%= query.brand === 'Toyota' ? 'selected' : '' %>>Toyota</option>
+                         <option value="Honda" <%= query.brand === 'Honda' ? 'selected' : '' %>>Honda</option>
+                         <option value="Ford" <%= query.brand === 'Ford' ? 'selected' : '' %>>Ford</option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <select class="form-select" name="order">
+                        <option value="desc" <%= query.order === "desc" ? "selected" : "" %>>
+                            Mới nhất
+                        </option>
+
+                        <option value="asc" <%= query.order === "asc" ? "selected" : "" %>>
+                            Cũ nhất
+                        </option>
+                    </select>
+                </div>
+                <div class="col-sm-8" >
+                    <div class="row g-2">
+                        <div class="col-6">
+                        <input type="number" class="form-control" 
+                        name="minPrice" placeholder="Giá tối thiểu" 
+                        value="<%= query.minPrice || '' %>">
+                    </div>
+                    <div class="col-6">
+                        <input type="number" class="form-control" 
+                        name="maxPrice" placeholder="Giá tối đa" 
+                        value="<%= query.maxPrice || '' %>">
+                    </div>
+                </div>
+    
+                </div>
             </form>
         </div>
         <div class="table-responsive border rounded">

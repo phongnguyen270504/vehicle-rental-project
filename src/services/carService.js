@@ -8,8 +8,6 @@ const {Op, NUMBER}= require("sequelize");
 
 const getAllCars= async (query={})=>{
         const whereCar={};
-        // const whereBrand={};
-        // const whereType={};
 
         const page= Math.max(Number(query.page) || 1, 1);
         const limit = Math.min(
@@ -25,39 +23,59 @@ const getAllCars= async (query={})=>{
             whereCar.name={ [Op.like]: `%${keyword}%`};
         }
 
-        // if(query.brand?.trim()){
-
-        //     whereBrand.name=query.brand.trim();
-        // }
-
-        // if(query.type?.trim())
-        // {
-        //     whereType.name=query.type.trim();
-        // }
-
-        if (query.status) 
+        if(query.brand?.trim())
         {
+            const keyword = query.brand.trim();
+            whereCar.brand={ [Op.like]: `%${keyword}%`};
+        }
+        if(query.type?.trim())
+        {
+            const keyword = query.type.trim();
+            whereCar.type={ [Op.like]: `%${keyword}%`};
+        }
+
+        
+        const validStatuses = ['available', 'rented', 'maintenance'];
+        
+        if (query.status) {
+            if (!validStatuses.includes(query.status)) {
+                const err = new Error('Trạng thái xe không hợp lệ');
+                err.statusCode = 400;
+                throw err;
+            }
+
             whereCar.status = query.status;
         }
         
-        if(query.minPrice && isNaN(Number(query.minPrice)) || query.maxPrice && isNaN(Number(query.maxPrice)))
-        {
+        const minPrice = query.minPrice ? Number(query.minPrice) : null;
+        const maxPrice = query.maxPrice ? Number(query.maxPrice) : null;
+        
+        if(query.minPrice && (isNaN(minPrice) || minPrice < 0) || 
+        (query.maxPrice && (isNaN(maxPrice) || maxPrice < 0))) {
             const err= new Error('Giá thuê không hợp lệ');
             err.statusCode= 400;
             throw err;
         }
+        
+        if (minPrice !== null && maxPrice !== null && minPrice > maxPrice) {
+            const err= new Error('Giá thuê tối thiểu không được lớn hơn giá thuê tối đa');
+            err.statusCode= 400;
+            throw err;
+        }
 
-        if (query.minPrice || query.maxPrice) {
+        
+        if (minPrice !== null || maxPrice !== null) {
             whereCar.price_per_day = {};
 
-            if (query.minPrice) {
-                whereCar.price_per_day[Op.gte] = Number(query.minPrice);
+            if (minPrice !== null) {
+                whereCar.price_per_day[Op.gte] = minPrice;
             }
 
-            if (query.maxPrice) {
-                whereCar.price_per_day[Op.lte] = Number(query.maxPrice);
+            if (maxPrice !== null) {
+                whereCar.price_per_day[Op.lte] = maxPrice;
             }
         }
+        
 
         const {count, rows}= await Car.findAndCountAll(
             { 
@@ -65,7 +83,6 @@ const getAllCars= async (query={})=>{
                 attributes:[ 'id', 'name', 'price_per_day', 'status', 'brand', 'type','image'],
                 limit: limit,
                 offset: offset,
-                distinct: true,
                 order: [['id', order]]
             }
         );
@@ -116,13 +133,13 @@ const getCarById= async (id)=>{
 
 const createCar = async (data)=>{
 
-    // if(!name || !brand || !type || !price_per_day)
-    // {
-    //     const err = new Error('Thiếu dữ liệu bắt buộc');
-    //     err.statusCode = 400;
-    //     throw err;
-    // }
+    const name= data.name?.trim();
+    const price_per_day= data.price_per_day;
+    const brand= data.brand?.trim();
+    const type= data.type?.trim();
+    const image= data.image || null;
 
+    
     // const brandId= Number(brand_id);
     // if (isNaN(brandId) || brandId <= 0) {
     //     const err = new Error('Brand ID không hợp lệ');
@@ -151,13 +168,7 @@ const createCar = async (data)=>{
     //     throw err;
     // }
 
-    const price = Number(data.price_per_day);
-
-    if (isNaN(price) || price <= 0) {
-        const err = new Error('Giá thuê không hợp lệ');
-        err.statusCode = 400;
-        throw err;
-    }
+   
 
     const car= await Car.create({
         name: data.name,
@@ -189,84 +200,53 @@ const updateCar= async (id,data)=>{
         throw err;
     }
     const oldImage= car.image;
-    const updateData={};
-    if(data.name !== undefined)
-    {
-        if(typeof data.name !== 'string' || !data.name.trim())
-        {
-            const err = new Error('Tên xe không được để trống');
-            err.statusCode = 400;
-            throw err;
-        }
-        updateData.name= data.name.trim();
+
+    const updateData = {};
+
+    if (data.name !== undefined) {
+        updateData.name = data.name.trim();
     }
-    if(data.price_per_day !== undefined)    {
-        if(isNaN(Number(data.price_per_day)) || Number(data.price_per_day) <=0)
-        {
-            const err = new Error('Giá thuê không hợp lệ');
-            err.statusCode = 400;
-            throw err;
-        }
-        updateData.price_per_day= Number(data.price_per_day);
+
+    if (data.brand !== undefined) {
+        updateData.brand = data.brand.trim();
     }
-    if(data.status !== undefined)    {
-        if(typeof data.status !== 'string' || !['available', 'rented', 'maintenance'].includes(data.status))
-        {
-            const err = new Error('Trạng thái xe không hợp lệ');
-            err.statusCode = 400;
-            throw err;
-        }
-        updateData.status= data.status;
+
+    if (data.type !== undefined) {
+        updateData.type = data.type.trim();
     }
-    if(data.brand !== undefined)    {
-        if(typeof data.brand !== 'string' || !data.brand.trim())
-        {
-            const err = new Error('Tên hãng xe không được để trống');
-            err.statusCode = 400;
-            throw err;
-        }
-        updateData.brand= data.brand.trim();
+
+    if (data.price_per_day !== undefined) {
+        updateData.price_per_day = Number(data.price_per_day);
     }
-    if(data.type !== undefined)    {
-        if(typeof data.type !== 'string' || !data.type.trim())
-        {
-            const err = new Error('Tên loại xe không được để trống');
-            err.statusCode = 400;
-            throw err;
-        }
-        updateData.type= data.type.trim();
+
+    if (data.status !== undefined) {
+        updateData.status = data.status;
     }
+
+
+    
+    // if(data.brand !== undefined)    {
+    //     if(typeof data.brand !== 'string' || !data.brand.trim())
+    //     {
+    //         const err = new Error('Tên hãng xe không được để trống');
+    //         err.statusCode = 400;
+    //         throw err;
+    //     }
+    //     updateData.brand= data.brand.trim();
+    // }
+    // if(data.type !== undefined)    {
+    //     if(typeof data.type !== 'string' || !data.type.trim())
+    //     {
+    //         const err = new Error('Tên loại xe không được để trống');
+    //         err.statusCode = 400;
+    //         throw err;
+    //     }
+    //     updateData.type= data.type.trim();
+    // }
     if(data.file)    {
         updateData.image=  "/uploads/cars/" + data.file.filename;
     }
-    // if('brand_id' in data){
-    //     const brandId= Number(data.brand_id);
-    //     if (isNaN(brandId) || brandId <= 0) {
-    //         const err = new Error('Brand ID không hợp lệ');
-    //         err.statusCode = 400;
-    //         throw err;
-    //     }
-    //     const brand = await Brand.findByPk(brandId);
-    //     if (!brand) {
-    //         const err = new Error('Brand không tồn tại');
-    //         err.statusCode = 400;
-    //         throw err;
-    //     }
-    // }
-    // if('type_id' in data){
-    //     const typeId= Number(data.type_id);
-    //     if (isNaN(typeId) || typeId <= 0) {
-    //         const err = new Error('Car type ID không hợp lệ');
-    //         err.statusCode = 400;
-    //         throw err;
-    //     }
-    //     const type = await CarType.findByPk(typeId);
-    //     if (!type) {
-    //         const err = new Error('Car type không tồn tại');
-    //         err.statusCode = 400;
-    //         throw err;
-    //     }
-    // }
+    
    
     await car.update(updateData);
    
@@ -303,12 +283,14 @@ const deleteCar=async (id)=>{
         throw err;
     }
     const oldImage = car.image;
+
+    await car.destroy();
+    
     if(oldImage){
         const oldImagePath = path.join(__dirname, "..", "public", oldImage);
         await fs.unlink(oldImagePath).catch(() => {});
     }
-
-    await car.destroy();
+    
 }
 
 module.exports={getAllCars,getCarById,createCar,updateCar,deleteCar};

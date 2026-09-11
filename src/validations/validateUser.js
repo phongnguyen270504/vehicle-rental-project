@@ -1,12 +1,12 @@
 const validateFullname = (fullname) => {
-    if (!fullname || fullname.trim() === '') {
+    if (typeof fullname !== 'string' || fullname.trim() === '') {
         return 'Họ và tên là bắt buộc';
     }
     return null;
 }
 
 const validateEmail = (email) => {
-    if (!email || email.trim() === '') {
+    if (typeof email !== 'string' || email.trim() === '') {
         return 'Email là bắt buộc';
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -24,7 +24,7 @@ const validatePhone = (phone) => {
 }
 
 const validatePassword = (password) => {
-    if (!password || password.trim() === '') {
+    if (typeof password !== 'string' || password.trim() === '') {
         return 'Mật khẩu là bắt buộc';
     }
     if (password.length < 6) {
@@ -34,7 +34,7 @@ const validatePassword = (password) => {
 }
 
 const validateConfirmPassword = (password, confirmPassword) => {
-    if (!confirmPassword || confirmPassword.trim() === '') {
+    if (typeof confirmPassword !== 'string' || confirmPassword.trim() === '') {
         return 'Xác nhận mật khẩu là bắt buộc';
     }
     if (password !== confirmPassword) {
@@ -45,30 +45,39 @@ const validateConfirmPassword = (password, confirmPassword) => {
 
 const validateCreateUser = (userData) => {
     const errors = {};
-    
-    const fullnameError = validateFullname(userData.fullname);
-    const phoneError = validatePhone(userData.phone);
-    const emailError = validateEmail(userData.email);
-    const passwordError = validatePassword(userData.password);
-    const confirmPasswordError = validateConfirmPassword(userData.password, userData.confirmpassword);
+   
     const role = userData.role?.trim();
 
-    if (fullnameError) {
-        errors.fullname = fullnameError;
+    if(userData.fullname !== undefined) {
+        const fullnameError = validateFullname(userData.fullname);
+        if (fullnameError) {
+            errors.fullname = fullnameError;
+        }
     }
-    if (emailError) {
-        errors.email = emailError;
+    if(userData.phone !== undefined) {
+        const phoneError = validatePhone(userData.phone);
+        if (phoneError) {
+            errors.phone = phoneError;
+        }
     }
-    if (phoneError) {
-        errors.phone = phoneError;
+    if(userData.email !== undefined) {
+        const emailError = validateEmail(userData.email);
+        if (emailError) {
+            errors.email = emailError;
+        }
     }
-    if (passwordError) {
-        errors.password = passwordError;
+    if(userData.password !== undefined) {
+        const passwordError = validatePassword(userData.password);
+        if (passwordError) {
+            errors.password = passwordError;
+        }
     }
-    if (confirmPasswordError) {
-        errors.confirmpassword = confirmPasswordError;
+    if(userData.confirmpassword !== undefined) {
+        const confirmPasswordError = validateConfirmPassword(userData.password, userData.confirmpassword);
+        if (confirmPasswordError) {
+            errors.confirmpassword = confirmPasswordError;
+        }
     }
-
    
    /* if (!role) {
         errors.role = 'Vai trò là bắt buộc';
@@ -78,29 +87,35 @@ const validateCreateUser = (userData) => {
 }
 
 const validateUpdateUser = (userData) => {
-    const errors = {};
+       const errors = {};
 
-    const fullnameError = validateFullname(userData.fullname);
-    const phoneError = validatePhone(userData.phone);
-    const emailError = validateEmail(userData.email);
-    const role = userData.role?.trim();
+    if (userData.fullname !== undefined) {
+        const fullnameError = validateFullname(userData.fullname);
 
-    if (fullnameError) {
-        errors.fullname = fullnameError;
+        if (fullnameError) {
+            errors.fullname = fullnameError;
+        }
     }
-    if (emailError) {
-        errors.email = emailError;
+
+    if (userData.phone !== undefined) {
+        const phoneError = validatePhone(userData.phone);
+
+        if (phoneError) {
+            errors.phone = phoneError;
+        }
     }
-    if (phoneError) {
-        errors.phone = phoneError;
+
+    if (userData.email !== undefined) {
+        const emailError = validateEmail(userData.email);
+
+        if (emailError) {
+            errors.email = emailError;
+        }
     }
-   /* if (role) {
-        errors.role = 'Vai trò là bắt buộc';
-    }*/
 
     return errors;
 }
 module.exports = {
     validateCreateUser,
-    validateUpdateUser
+    validateUpdateUser,
 };
