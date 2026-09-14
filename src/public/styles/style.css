@@ -61,11 +61,15 @@
 
             width:250px;
 
-            background:#212529;
+            min-height:100vh;
 
             color:white;
 
             padding:20px;
+
+            flex-shrink:0;
+           background-color: #343a40 !important;
+
         }
 
         .sidebar h3{
@@ -87,7 +91,7 @@
         }
 
         .sidebar a:hover{
-            background:#343a40;
+            background: rgba(255,255,255,0.1);
         }
         /* TOPBAR */
          .topbar{
@@ -99,6 +103,7 @@
 
             position: sticky; 
             top: 0;
+
         }
 
          .content{

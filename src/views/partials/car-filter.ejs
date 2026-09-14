@@ -1,0 +1,88 @@
+        <div class="col-sm-4">
+                    <select class="form-select " name="status">
+                        <option value="">Tất cả trạng thái</option>
+
+                        <option value="available"
+                            <%= query.status === 'available' ? 'selected' : '' %>>
+                            Available
+                        </option>
+
+                        <option value="rented"
+                            <%= query.status === 'rented' ? 'selected' : '' %>>
+                            Rented
+                        </option>
+
+                        <option value="maintenance"
+                            <%= query.status === 'maintenance' ? 'selected' : '' %>>
+                            Maintenance
+                        </option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <select class="form-select" name="type">
+                        <option value="">Tất cả loại xe</option>
+
+                        <option value="sedan"
+                            <%= query.type === 'sedan' ? 'selected' : '' %>>
+                            Sedan
+                        </option>
+
+                        <option value="suv"
+                            <%= query.type === 'suv' ? 'selected' : '' %>>
+                            SUV
+                        </option>
+
+                        <option value="truck"
+                            <%= query.type === 'truck' ? 'selected' : '' %>>
+                            Truck
+                        </option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <select name="brand" id="brand" class="form-select">
+                        <option value="">Tất cả thương hiệu</option>
+                        <!-- Brand options will be populated dynamically -->
+                         <option value="Toyota" <%= query.brand === 'Toyota' ? 'selected' : '' %>>Toyota</option>
+                         <option value="Honda" <%= query.brand === 'Honda' ? 'selected' : '' %>>Honda</option>
+                         <option value="Ford" <%= query.brand === 'Ford' ? 'selected' : '' %>>Ford</option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <select class="form-select" name="sort">
+
+                        <option value="update_at_asc" <%= query.sort === "update_at_asc" ? "selected" : "" %>>
+                            Cập nhật cũ nhất
+                        </option>
+                        <option value="update_at_desc" <%= query.sort === "update_at_desc" ? "selected" : "" %>>
+                            Cập nhật mới nhất
+                        </option>
+
+                        <option value="price_asc" <%= query.sort === "price_asc" ? "selected" : "" %>>
+                            Giá tăng dần
+                        </option>
+                        <option value="price_desc" <%= query.sort === "price_desc" ? "selected" : "" %>>
+                            Giá giảm dần
+                        </option>
+                        
+                        <option value="created_at_asc" <%= query.sort === "created_at_asc" ? "selected" : "" %>>
+                            Ngày tạo cũ nhất
+                        </option>
+                        <option value="created_at_desc" <%= query.sort === "created_at_desc" ? "selected" : "" %>>
+                            Ngày tạo mới nhất
+                        </option>
+                    </select>
+                </div>
+                <div class="col-sm-8" >
+                    <div class="row g-2">
+                        <div class="col-6">
+                        <input type="number" class="form-control" 
+                        name="minPrice" placeholder="Giá tối thiểu" 
+                        value="<%= query.minPrice || '' %>">
+                    </div>
+                    <div class="col-6">
+                        <input type="number" class="form-control" 
+                        name="maxPrice" placeholder="Giá tối đa" 
+                        value="<%= query.maxPrice || '' %>">
+                    </div>
+                </div>
+        </div>

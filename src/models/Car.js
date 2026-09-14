@@ -36,6 +36,12 @@ const Car= sequelize.define(
         image:{
             type: DataTypes.STRING,
             allowNull: true,
+        },
+        created_at:{
+            type: DataTypes.DATE,
+        },
+        updated_at:{
+            type: DataTypes.DATE,
         }
     },{
         tableName:'cars',

@@ -24,15 +24,16 @@
     <%- include("../partials/header.ejs") %>
     <main class="main container">
         <h2>Danh sách xe</h2>
-            <div class="my-2">
-            <form method="GET" action="/cars">
+            <div class="my-2 border rounded p-3 bg-white">
+            <form method="GET" action="/cars" class="row g-3">
                 <%- include('../partials/search-bar',{keyword: currentName, search_name: 'name'}) %>
+                <%- include('../partials/car-filter', { query }) %>
             </form>
         </div>
         <div class="car-list row">
             <!-- Car items will be dynamically inserted here -->  
           <% cars.forEach(car => { %>
-            <div class="car-item col-md-4 col-sm-6 mb-4">
+            <div class="car-item col-md-3 col-sm-6 col-6 mb-4">
                 <div class="car-card card p-3">
 
                     <img

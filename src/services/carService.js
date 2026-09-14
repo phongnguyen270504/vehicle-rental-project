@@ -15,7 +15,21 @@ const getAllCars= async (query={})=>{
             20
         );
         const offset= (page-1)*limit;
-        const order= query.order === 'asc' ? 'ASC' : 'DESC';
+        const sortMap={
+            'name_asc': ['name', 'ASC'],
+            'name_desc': ['name', 'DESC'],
+            'price_asc': ['price_per_day', 'ASC'],
+            'price_desc': ['price_per_day', 'DESC'],
+            'status_asc': ['status', 'ASC'],
+            'status_desc': ['status', 'DESC'],
+            'update_at_asc': ['updated_at', 'ASC'],
+            'update_at_desc': ['updated_at', 'DESC'],
+            'created_at_asc': ['created_at', 'ASC'],
+            'created_at_desc': ['created_at', 'DESC']
+        }
+        
+        const sort = sortMap[query.sort];
+        const order = sort || ['id', 'ASC'];
 
         if(query.name?.trim())
         {
@@ -80,10 +94,10 @@ const getAllCars= async (query={})=>{
         const {count, rows}= await Car.findAndCountAll(
             { 
                 where: whereCar,
-                attributes:[ 'id', 'name', 'price_per_day', 'status', 'brand', 'type','image'],
+                attributes:[ 'id', 'name', 'price_per_day', 'status', 'brand', 'type','image',],
                 limit: limit,
                 offset: offset,
-                order: [['id', order]]
+                order: [order]
             }
         );
 

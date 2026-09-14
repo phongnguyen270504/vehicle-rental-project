@@ -1,46 +1,72 @@
-<div class="sidebar" style="position: sticky; top: 0; height: 100vh; background-color: #343a40; color: white; padding: 20px;">
-        <h3>Admin Dashboard</h3>
-        <ul class="nav flex-column">
+<div class="sidebar d-none d-md-flex flex-column">
+    <h3>Admin Dashboard</h3>
 
+    <ul class="nav flex-column">
         <li class="nav-item mb-2">
-
-            <a href="/admin/dashboard"
-               class="nav-link text-white">
-
+            <a href="/admin/dashboard" class="nav-link text-white">
                 Dashboard
-
             </a>
-
         </li>
 
         <li class="nav-item mb-2">
-
-            <a href="/admin/cars"
-               class="nav-link text-white">
-
+            <a href="/admin/cars" class="nav-link text-white">
                 Quản lý xe
-
             </a>
-
         </li>
+
         <li class="nav-item mb-2">
-
-            <a href="/admin/rentals"
-               class="nav-link text-white">
-
+            <a href="/admin/rentals" class="nav-link text-white">
                 Quản lý đơn thuê
-
             </a>
-
         </li>
-            <li class="nav-item mb-2">
-    
-                <a href="/admin/users"
-                class="nav-link text-white">
-    
-                    Quản lý người dùng
-    
-                </a>
+
+        <li class="nav-item mb-2">
+            <a href="/admin/users" class="nav-link text-white">
+                Quản lý người dùng
+            </a>
+        </li>
     </ul>
+</div>
+
+<div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar">
+
+    <div class="offcanvas-header">
+        <h3 class="offcanvas-title">Admin Dashboard</h3>
+
+        <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="offcanvas">
+        </button>
     </div>
 
+    <div class="offcanvas-body bg-dark">
+        <ul class="nav flex-column">
+
+            <li class="nav-item mb-2">
+                <a href="/admin/dashboard" class="nav-link text-white">
+                    Dashboard
+                </a>
+            </li>
+
+            <li class="nav-item mb-2">
+                <a href="/admin/cars" class="nav-link text-white">
+                    Quản lý xe
+                </a>
+            </li>
+
+            <li class="nav-item mb-2">
+                <a href="/admin/rentals" class="nav-link text-white">
+                    Quản lý đơn thuê
+                </a>
+            </li>
+
+            <li class="nav-item mb-2">
+                <a href="/admin/users" class="nav-link text-white">
+                    Quản lý người dùng
+                </a>
+            </li>
+
+        </ul>
+    </div>
+</div>

@@ -1,14 +1,23 @@
 <div class="topbar d-flex justify-content-between align-items-center p-3 border-bottom shadow-sm">
-
-        <h4>
+        <div class="d-flex align-items-center">
+            <button
+    class="btn btn-primary d-md-none me-2"
+    type="button"
+    data-bs-toggle="offcanvas"
+    data-bs-target="#mobileSidebar"
+>
+    ☰
+</button>
+        <h4 class="mb-0">
             <% if (title) {%>
                 <%= title %>
             <% } else { %>
                 Dashboard
             <% } %>
         </h4>
+    </div>
 
-        <div>
+        <div class="">
             <% if (user) { %>
             <span class="me-3">Hello, Admin</span>
             <a href="/auth/logout" class="btn btn-outline-secondary btn-sm">
