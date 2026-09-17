@@ -3,6 +3,7 @@ const Rental= require('../models/Rental');
 const {sequelize}= require('../models/db');
 const { Op, where }= require('sequelize');
 const {builtPagination } = require('../utils/pagination');
+const User = require('../models/User');
 
 
 const getRentals= async (options={})=>{
@@ -13,7 +14,7 @@ const getRentals= async (options={})=>{
     const offset= (page-1)*limit;
 
     if(options.userId){
-        where.customer_id= options.userId;
+        where.user_id= options.userId;
     }
     if(options.status){
         where.status= options.status;
@@ -39,7 +40,7 @@ const getRentals= async (options={})=>{
     
     const results= rows.map(r=>({
             id: r.id,
-            customerId: r.customer_id,
+            customerId: r.user_id,
             carId: r.car_id,
             startDate: r.start_date,
             endDate: r.end_date,
@@ -176,7 +177,7 @@ const rentalCancel= async (rentalId,user)=>{
         throw err;
     }
 
-    if(rental.customer_id !== user.id || user.role !== 'admin'){
+    if(rental.user_id !== user.id && user.role !== 'admin'){
         const err= new Error('Bạn chỉ có thể hủy đơn thuê của chính mình');
         err.statusCode=403;
         throw err;
@@ -231,8 +232,28 @@ const rentalComplete= async (rentalId,user)=>{
 }
 
 const rentalCreate= async (userId,data)=>{
-    const {car_id,start_date,end_date}= data;
+    const {
+        customer_name,
+        customer_phone,
+        customer_email,
+        car_id,
+        start_date,
+        end_date,
+        status='pending',
+    }= data;
 
+    if(userId)
+    {
+        const user= await User.findByPk(userId);
+        if(!user){
+             const err= new Error('Người dùng không tồn tại');
+            err.statusCode=404;
+            throw err;
+        }
+        data.customer_name= user.fullname;
+        data.customer_phone = user.phone;
+        data.customer_email = user.email;
+    }
     const car= await Car.findByPk(car_id);
     console.log("Dữ liệu xe:", car);
     if(!car)
@@ -251,23 +272,31 @@ const rentalCreate= async (userId,data)=>{
     const start= new Date(start_date);
     const end= new Date(end_date);
     const days= Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+    console.log('start_date:', start_date);
+    console.log('end_date:', end_date);
+    console.log('start:', start);
+    console.log('end:', end);
+    console.log('days:', days);
     if(days <=0)
     {
-        const err= new Error('Ngày thuê không hợp lệ');
+        const err = new Error('Ngày thuê không hợp lệ');
         err.statusCode=400;
         throw err;
     }
    
     const total_price= days * Number(car.price_per_day);
 
-   const rental= await Rental.create({
-        customer_id: userId,
+   const rental = await Rental.create({
+        user_id: userId,
         car_id,
+        customer_name: userId ? data.customer_name : customer_name,
+        customer_phone: userId ? data.customer_phone : customer_phone,
+        customer_email: userId ? data.customer_email : customer_email,
         start_date,
         end_date,
         total_price,
-        status:'pending'
-   })
+        status
+    });
 
     return rental;
 }

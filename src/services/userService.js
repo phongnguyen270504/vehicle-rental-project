@@ -51,6 +51,16 @@ const getAllUsers = async (options = {}) => {
     }
     return result;
    }
+const getAllCustomerForRental= async (options={})=>{
+    return await User.findAll({
+        where:{
+            role:'customer',
+            user_status:'active'
+        },
+        attributes: ['id', 'fullname', 'phone', 'email'],
+        order: [['fullname', 'ASC']]
+    })
+}
    
 const getUserById = async (id) => {
     const user = await User.findByPk(id, {
@@ -214,4 +224,5 @@ module.exports = {
     updateUser,
     deleteUser,
     restoreUser,
+    getAllCustomerForRental
 }

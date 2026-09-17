@@ -1,5 +1,6 @@
 const rentalService= require('../../../services/rentalService');
-
+const carService= require('../../../services/carService');
+const userService= require('../../../services/userService');
 const manageRentalsPage= async (req, res) => {
    try {
         const results = await rentalService.getRentals({...req.query,limit: Number(req.query.limit) || 2});
@@ -16,6 +17,58 @@ const manageRentalsPage= async (req, res) => {
         console.error(err);
         res.status(500).json({ message: 'Server error' });
    }
+}
+
+const rentalCreatePage= async (req, res)=>{
+    try {
+        const carsResult=  await carService.getAllCars({...req.query, limit: 3});
+        const users=  await userService.getAllCustomerForRental(req.query);
+        return res.render('admin/create-rental',
+            {
+            carsResult,
+            users,
+            title: 'Tạo đơn hàng',
+        }
+        )
+    } catch (err) {
+        console.log(err);
+        res.status(err.statusCode || 500).json({message: err.message || 'Server error'});
+    }
+}
+
+const rentalCreate = async (req, res)=>{
+    try {
+
+        const {
+            car_id,
+            user_id,
+            customer_name,
+            customer_phone,
+            customer_email,
+            start_date,
+            end_date,
+        }= req.body
+
+        const userId= user_id ? Number(user_id): null
+
+        const data= {
+            car_id,
+            customer_name,
+            customer_phone,
+            customer_email,
+            start_date,
+            end_date,
+            status: 'pending'
+        }
+        const rental= await rentalService.rentalCreate(userId,data);
+        return res.redirect('/admin/rentals');
+    } catch (err) {
+        console.error(err);
+
+        return res.status(err.statusCode || 500).json({
+            message: err.message || 'Server error'
+        });
+    }
 }
 
 const rentalDetailPage= async (req, res) => {
@@ -90,4 +143,6 @@ module.exports= {
     cancelRental, 
     completeRental,
     manageRentalsPage,
+    rentalCreate,
+    rentalCreatePage,
 };

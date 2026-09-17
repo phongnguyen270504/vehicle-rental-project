@@ -11,9 +11,9 @@ const Rental= sequelize.define(
             autoIncrement: true,
             primaryKey: true
         },
-        customer_id:{
+        user_id:{
             type: DataTypes.INTEGER,
-            allowNull: false,
+            allowNull: true,
         },
         admin_id:{
             type: DataTypes.INTEGER,
@@ -39,6 +39,26 @@ const Rental= sequelize.define(
             type: DataTypes.ENUM('pending','active','completed','cancelled'),
             allowNull:false,
             defaultValue:'pending',
+        },
+        customer_name:{
+            type: DataTypes.STRING(80),
+            allowNull:true,
+        },
+        customer_phone:{
+            type: DataTypes.STRING(20),
+            allowNull: true,
+        },
+        customer_email:{
+            type:DataTypes.STRING(100),
+            allowNull:true,
+        },
+        created_at:{
+            type:DataTypes.DATE,
+            allowNull:true,
+        },
+        updated_at:{
+            type:DataTypes.DATE,
+            allowNull:true,
         }
     },
     {
@@ -47,8 +67,8 @@ const Rental= sequelize.define(
     }
 )
 
-Rental.belongsTo(User,{foreignKey:'customer_id'});
-User.hasMany(Rental,{foreignKey:'customer_id'})
+Rental.belongsTo(User,{foreignKey:'user_id'});
+User.hasMany(Rental,{foreignKey:'user_id'})
 Rental.belongsTo(Car,{foreignKey:'car_id'});
 Car.hasMany(Rental,{foreignKey:'car_id'});
 Rental.belongsTo(User,{foreignKey:'admin_id'});
