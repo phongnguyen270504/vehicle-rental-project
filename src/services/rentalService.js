@@ -144,9 +144,17 @@ const confirmRental= async (rentalId,admin)=>{
         });
 
         if(conflict){
-            const err= new Error('Xe đã được thuê trong khoảng thời gian này');
-            err.statusCode=400;
-            throw err;
+           rental.status = 'cancelled';
+
+            await rental.save({ transaction });
+
+            await transaction.commit();
+
+            return {
+                message: 'Xe đã được thuê trong khoảng thời gian này',
+                rental_id: rental.id,
+                status: 'cancelled'
+            };
         }
 
         await rental.update(
@@ -200,35 +208,57 @@ const rentalCancel= async (rentalId,user)=>{
 }
 
 const rentalComplete= async (rentalId,user)=>{ 
-    if(user.role !== 'admin'){
-        const err= new Error('Không có quyền hoàn tất đơn này');
-        err.statusCode=403;
-        throw err;
-    }
-    const rental= await Rental.findByPk(rentalId);
-    if(!rental){
-        const err= new Error('Đơn thuê không tồn tại');
-        err.statusCode=404;
-        throw err;
-    }
-    if(rental.status !=='active'){
-        const err= new Error('Chỉ có thể hoàn tất đơn thuê ở trạng thái đang hoạt động');
-        err.statusCode=400;
-        throw err;
-    }
-    
-    rental.status='completed';
-    await rental.save();
+    const transaction = await sequelize.transaction();
 
-    Car.update(
-        {status:'available'},
-        {where:{id:rental.car_id}}
-    );
+    try {
+        if (user.role !== 'admin') {
+            const err = new Error('Không có quyền hoàn tất đơn này');
+            err.statusCode = 403;
+            throw err;
+        }
 
-    return {
-        message:'Hoàn tất đơn thuê thành công',
-        rental_id: rental.id,
-    };
+        const rental = await Rental.findByPk(rentalId, {
+            transaction,
+            lock: transaction.LOCK.UPDATE
+        });
+
+        if (!rental) {
+            const err = new Error('Đơn thuê không tồn tại');
+            err.statusCode = 404;
+            throw err;
+        }
+
+        if (rental.status !== 'active') {
+            const err = new Error(
+                'Chỉ có thể hoàn tất đơn thuê ở trạng thái đang hoạt động'
+            );
+            err.statusCode = 400;
+            throw err;
+        }
+
+        rental.status = 'completed';
+
+        await rental.save({ transaction });
+
+        await Car.update(
+            { status: 'available' },
+            {
+                where: { id: rental.car_id },
+                transaction
+            }
+        );
+
+        await transaction.commit();
+
+        return {
+            message: 'Hoàn tất đơn thuê thành công',
+            rental_id: rental.id
+        };
+
+    } catch (err) {
+        await transaction.rollback();
+        throw err;
+    }
 }
 
 const rentalCreate= async (userId,data)=>{

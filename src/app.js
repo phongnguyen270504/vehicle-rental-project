@@ -16,9 +16,7 @@ const carViewRouter= require('./router/webRouters/carViewRouter');
 const authViewRouter= require('./router/webRouters/authViewRouter');
 const adminViewRouter= require('./router/webRouters/admin/indexRouter');
 const rentalViewRouter= require('./router/webRouters/rentalViewRouter');;
-const carAdminViewRouter= require('./router/webRouters/admin/carViewRouter');
-const rentalAdminViewRouter= require('./router/webRouters/admin/rentalViewRouter');
-const userAdminViewRouter= require('./router/webRouters/admin/userViewRouter');
+
 const app = express();
 
 app.set('view engine', 'ejs');

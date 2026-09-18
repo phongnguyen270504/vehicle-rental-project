@@ -40,7 +40,12 @@
         <div class="content">
         <h2 class="mb-4">Tạo đơn hàng</h2>
             <div class="rental-form">
+        <form action="/admin/rentals/create" method="GET" class="mb-3">
+            <%- include('../partials/search-bar',{ keyword: query.search, search_name: 'name' }) %>
+        </form>
+        
         <form action="/admin/rentals/create" method="post">
+            <input type="hidden" name="page" value="<%= carsResult.currentPage || query?.page || 1 %>">
             <div class="card mb-4">
                 <div class="card-header">
                     <h5 class="mb-0">Thông tin khách hàng</h5>
@@ -51,12 +56,14 @@
                     <select name="user_id" id="user_id" class="form-select">
                         <option value="">-- Khách vãng lai --</option>
                         <% users.forEach(user => {%>
-                            <option value="<%= user.id %>">
+                            <option value="<%= user.id %>"  <%= String(user.id) === String(data.user_id) ? 'selected' : '' %>>
                                 <%= user.fullname %> - <%= user.phone || 'Không có SĐT' %> - <%= user.email %>
                             </option>
                             <% }) %>
                         
                     </select>
+                   
+
                     <div class="form-text"> Không chọn khách hàng đăng ký nếu đây là khách vãng lai. </div>
                 </div>
                 <div class="border rounded p-3">
@@ -64,15 +71,33 @@
 
                     <div class="mb-3"> 
                         <label class="form-label">Họ và tên</label> 
-                        <input type="text" name="customer_name" class="form-control"> 
+                        <input type="text" name="customer_name" class="form-control" 
+                        value="<%= data?.customer_name || '' %>">
+                         <% if (errors?.customer_name) { %>
+                        <div class="text-danger">
+                            <%= errors.customer_name %>
+                        </div>
+                    <% } %>
                     </div>
                     <div class="mb-3"> 
                         <label class="form-label">Số điện thoại</label> 
-                        <input type="text" name="customer_phone" class="form-control"> 
+                        <input type="text" name="customer_phone" class="form-control" 
+                        value="<%= data?.customer_phone || '' %>"> 
+                        <% if (errors?.customer_phone) { %>
+                            <div class="text-danger">
+                                <%= errors.customer_phone %>
+                            </div>
+                        <% } %>
                     </div>
                     <div class="mb-3"> 
                         <label class="form-label">Email</label> 
-                        <input type="email" name="customer_email" class="form-control"> 
+                        <input type="email" name="customer_email" class="form-control"
+                        value="<%= data?.customer_email || '' %>"> 
+                         <% if (errors?.customer_email) { %>
+                        <div class="text-danger">
+                            <%= errors.customer_email %>
+                        </div>
+                    <% } %>
                     </div>
                 </div>
                 </div>
@@ -90,11 +115,12 @@
                                 <label class="card h-100">
                                     <div class="card-body">
                                         <div class="form-check mb-2"> 
-                                            <input class="form-check-input" type="radio" name="car_id" value="<%= car.id %>" required> 
+                                            <input class="form-check-input" type="radio" name="car_id" value="<%= car.id %>"
+                                            <%= String(car.id) === String(data?.car_id) ? 'checked' : '' %> > 
                                             <label class="form-check-label fw-bold"> Chọn xe này </label> 
                                         </div>
                                         <% if (car.image) { %> 
-                                            <img src="<%= car.image %>" class="img-fluid rounded mb-3" alt="<%= car.name %>"> \
+                                            <img src="<%= car.image %>" class="img-fluid rounded mb-3" alt="<%= car.name %>">
                                             <% } %>
                                         <h5><%= car.name %></h5> 
                                         <p class="mb-1"> Hãng: <%= car.brand || 'N/A' %> </p> 
@@ -106,7 +132,17 @@
                                 </label>
                             </div>
                             <% }) %>
+                            <% if (errors?.car_id) { %>
+                                <div class="text-danger">
+                                    <%= errors.car_id %>
+                                </div>
+                            <% } %>
                     </div>
+                    <%- include('../partials/pagination', 
+            { totalPages: carsResult.totalPages, 
+            currentPage: carsResult.currentPage,
+            pagination: carsResult.pagination,
+            }) %>
                 </div>
             </div>
             <div class="card mb-4">
@@ -123,7 +159,13 @@
                             type="datetime-local" 
                             name="start_date" 
                             id="start_date" class="form-control" 
-                            required>
+                            value="<%= data?.start_date || '' %>"
+                            >
+                            <% if (errors?.start_date) { %>
+                                <div class="text-danger">
+                                    <%= errors.start_date %>
+                                </div>
+                            <% } %>
                         </div>
                          <div class="col-md-6 mb-3">
                             <label class="form-label">
@@ -133,7 +175,13 @@
                             type="datetime-local" 
                             name="end_date" 
                             id="end_date" class="form-control" 
-                            required>
+                            value="<%= data?.end_date || '' %>"
+                            >
+                            <% if (errors?.end_date) { %>
+                                <div class="text-danger">
+                                    <%= errors.end_date %>
+                                </div>
+                            <% } %>
                         </div>
                     </div>
                 </div>

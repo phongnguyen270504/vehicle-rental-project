@@ -1,6 +1,8 @@
 const rentalService= require('../../../services/rentalService');
 const carService= require('../../../services/carService');
 const userService= require('../../../services/userService');
+
+const {validateCreateRental}= require('../../../validations/validateRental')
 const manageRentalsPage= async (req, res) => {
    try {
         const results = await rentalService.getRentals({...req.query,limit: Number(req.query.limit) || 2});
@@ -23,11 +25,15 @@ const rentalCreatePage= async (req, res)=>{
     try {
         const carsResult=  await carService.getAllCars({...req.query, limit: 3});
         const users=  await userService.getAllCustomerForRental(req.query);
+        
         return res.render('admin/create-rental',
             {
             carsResult,
             users,
             title: 'Tạo đơn hàng',
+            query: req.query,
+            data: {},
+            errors:{},
         }
         )
     } catch (err) {
@@ -51,7 +57,36 @@ const rentalCreate = async (req, res)=>{
 
         const userId= user_id ? Number(user_id): null
 
-        const data= {
+         const data = {
+            car_id,
+            user_id,
+            customer_name,
+            customer_phone,
+            customer_email,
+            start_date,
+            end_date
+        };
+
+        const errors = validateCreateRental({...data,user_id: userId})
+        if(Object.keys(errors).length>0){
+            const carsResult=  await carService.getAllCars({
+                ...req.query, 
+                limit: 3, 
+                page: Number(req.body.page) || 1
+            });
+            const users=  await userService.getAllCustomerForRental(req.query);
+            return res.status(400).render(
+                'admin/create-rental', {
+                title: 'Tạo đơn hàng',
+                users,
+                carsResult,
+                errors,
+                data: {...data,user_id: userId},
+                query: req.query
+            }
+            )
+        }
+        const rentalData= {
             car_id,
             customer_name,
             customer_phone,
@@ -60,7 +95,7 @@ const rentalCreate = async (req, res)=>{
             end_date,
             status: 'pending'
         }
-        const rental= await rentalService.rentalCreate(userId,data);
+        const rental= await rentalService.rentalCreate(userId,rentalData);
         return res.redirect('/admin/rentals');
     } catch (err) {
         console.error(err);
