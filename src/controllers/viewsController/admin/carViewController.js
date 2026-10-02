@@ -78,12 +78,13 @@ const bookingCar= async (req,res)=>{
         const { startDate, endDate } = req.body;
         const data= {car_id, start_date: startDate, end_date: endDate};
         await rentalService.rentalCreate(userId, data);
+        req.flash('success', 'Đặt xe thành công');
         res.redirect('/cars');
     }
     catch (err) {
-        console.error(err);        res.status(err.statusCode || 500).json({
-            message: err.message || 'Server error'
-        });
+        console.error(err);        
+       req.flash('danger', 'Có lỗi xảy ra khi đặt xe');
+        res.redirect('/cars/' + req.params.id + '/booking');
     }
 }
 
@@ -103,12 +104,13 @@ const createCarPage= async (req,res)=>{
 
 const createCar= async (req,res)=>{
     const errors = validateCreateCar(req.body);
-    if (Object.keys(errors).length > 0) {
+    const hasError = Object.values(errors).some((error) => error);
+    if (hasError) {
         return res.status(400).render('cars/create-car.ejs', {
             title: 'Thêm xe mới',
             errors: errors,
-            errorMessage: 'Dữ liệu không hợp lệ',
-            carData: req.body
+            carData: req.body,
+            errorMessage: 'Dữ liệu không hợp lệ'
         });
     }
     try {
@@ -119,13 +121,15 @@ const createCar= async (req,res)=>{
         const car = await carService.createCar(req.body);
         res.redirect('/admin/cars');
     } catch (err) {
+        
         if (req.file) {
             await fs.unlink(req.file.path).catch((unlinkErr) => {
                 console.error('Lỗi khi xóa file tạm thời:', unlinkErr);
             });
         }
         console.error(err);
-        res.status(err.statusCode || 500).json({ message: err.message || 'Server error' });
+        req.flash('danger', 'Có lỗi xảy ra khi tạo xe');
+        res.redirect('/admin/cars/create');
     }
 }
 
@@ -133,10 +137,12 @@ const deleteCar= async (req,res)=>{
     try {
         const id= Number(req.params.id);
         await carService.deleteCar(id);
+        req.flash('success', 'Xóa xe thành công');
         res.redirect('/admin/cars');
     } catch (err) {
         console.error(err);
-        res.status(err.statusCode || 500).json({ message: err.message || 'Server error' });
+        req.flash('danger', 'Có lỗi xảy ra khi tạo xe');
+        res.redirect('/admin/cars');
     }
 }
 
@@ -175,10 +181,12 @@ const updateCar= async (req,res) =>{
             req.body.image= "/uploads/cars/" + file.filename;
         }
         await carService.updateCar(id, {...req.body,file: req.file});
-        res.redirect('/admin/cars');
+        req.flash('success', 'Cập nhật xe thành công');
+        return res.redirect('/admin/cars');
     } catch (err) {
         console.error(err);
-        res.status(err.statusCode || 500).json({ message: err.message || 'Server error' });
+        req.flash('danger', 'Có lỗi xảy ra khi cập nhật xe');
+        res.redirect(`/admin/cars/${req.params.id}/update`);
     }
 }
 

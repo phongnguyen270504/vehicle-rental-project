@@ -40,6 +40,11 @@
     <%- include('../partials/topbar') %>
         <div class="content">
         <h1>Quản lý xe</h1>
+            <% if (locals.flash) { %>
+                <div class="alert alert-<%= locals.flash.type %>">
+                    <%= locals.flash.message %>
+                </div>
+            <% } %>
        
         <a href="/admin/cars/create" class="btn btn-primary mb-3">
             + Thêm xe

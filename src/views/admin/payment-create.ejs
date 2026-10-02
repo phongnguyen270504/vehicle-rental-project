@@ -58,9 +58,12 @@
                         
                     </div>
                     <div>
-                        <p class="card-text">Tổng tiền: $<%= 
-                        rental.total_price
-                        .toLocaleString('vi-VN') %></p>
+                        <p class="card-text">Tổng tiền: <%= 
+                        Number(rental.total_price).toLocaleString('vi-VN',{
+                            style: 'currency',
+                            currency: 'VND'
+                        })
+                         %></p>
                     </div>
                 </div>
                 <div>

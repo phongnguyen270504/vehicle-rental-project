@@ -2,7 +2,7 @@ const express = require('express');
 const cors= require('cors')
 const path = require('path');
 const session = require('express-session');
-const multer= require('multer');
+
 
 const globalMiddleware= require('./middlewares/global.middleware');
 const authSessionsMiddleware = require('./middlewares/auth.session.middleware');
@@ -33,6 +33,8 @@ app.use(session({
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
+
+app.use(globalMiddleware.flash);
 app.use(globalMiddleware.globalVariable);
 
 app.use('/api/cars', carRouter)
@@ -45,14 +47,13 @@ app.get('/', (req, res) => {
 });
 app.use('/cars', carViewRouter);
 app.use('/auth', authViewRouter);
+app.use('/rentals',  rentalViewRouter);
+app.use('/profile', userViewRouter);
 
 app.use('/admin', 
     authSessionsMiddleware.isLogin, 
     authSessionsMiddleware.isAdmin, 
     adminViewRouter);
-
-app.use('/rentals',  rentalViewRouter);
-app.use('/profile', userViewRouter);
 
 app.use((req, res) => {
     res.status(404).json({ message: 'Not found' });

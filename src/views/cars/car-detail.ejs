@@ -23,6 +23,11 @@
    <%- include("../partials/header.ejs") %>
     <main>
         <div class="container mt-5">
+             <% if (locals.flash) { %>
+                <div class="alert alert-<%= locals.flash.type %>">
+                    <%= locals.flash.message %>
+                </div>
+            <% } %>
         <div class="row">
             <div class="col-md-7">
             <img
@@ -35,7 +40,7 @@
                     <h2>
                         <%= result.name %>
                     </h2>
-
+                    
                 <p class="text-muted">
                     Sedan - 4 chỗ
                 </p>

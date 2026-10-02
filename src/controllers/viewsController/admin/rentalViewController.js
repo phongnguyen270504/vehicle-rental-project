@@ -56,6 +56,7 @@ const rentalCreate = async (req, res)=>{
             end_date,
         }= req.body
 
+
         const userId= user_id ? Number(user_id): null
 
          const data = {
@@ -96,7 +97,8 @@ const rentalCreate = async (req, res)=>{
             end_date,
             status: 'pending'
         }
-        const rental= await rentalService.rentalCreate(userId,rentalData);
+        const user= req.session.user ? req.session.user : null;
+        const rental= await rentalService.rentalCreate(userId,rentalData,user);
         return res.redirect('/admin/rentals');
     } catch (err) {
         console.error(err);

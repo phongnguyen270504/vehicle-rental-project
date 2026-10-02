@@ -17,9 +17,9 @@ const createPayment = async (req, res) => {
     try {
         const rentalId = req.params.id;
         const paymentMethod = req.body.paymentMethod;
-
-        const payment = await paymentService.createPayment(rentalId, paymentMethod);
-        res.json(payment);
+        const user = req.session.user ? req.session.user : null;
+        const payment = await paymentService.createPayment(rentalId, paymentMethod, user);
+        res.redirect(`/admin/rentals/${rentalId}`);
     } catch (error) {
         res.status(error.statusCode || 500).json({ error: error.message });
     }

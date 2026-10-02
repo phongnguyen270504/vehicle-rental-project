@@ -96,7 +96,10 @@
                 </tbody>
             </table>
             <div class="mb-3">
-                <p><strong>Tổng cộng:</strong> <%= rental.totalPrice %> VND</p>
+                <p><strong>Tổng cộng:</strong> <%= Number(rental.totalPrice).toLocaleString('vi-VN',{
+                    style: 'currency',
+                    currency: 'VND'
+                }) %> </p>
             </div>
          </div>
          </div>
@@ -114,13 +117,6 @@
             </form>
             <% } %>
             <% if(rental.status === 'active')  { %>
-            <form action="/admin/rentals/<%= rental.id %>/complete" method="POST" style="display:inline-block;" >
-                <button class="btn btn-primary my-2">
-                    Hoàn thành đơn hàng
-                </button>
-            </form>
-            <% } %>
-            <% if(rental.status === 'completed')  { %>
             
                 <a href="/admin/rentals/<%= rental.id %>/payment" class="btn btn-primary my-2">
                     Thanh toán

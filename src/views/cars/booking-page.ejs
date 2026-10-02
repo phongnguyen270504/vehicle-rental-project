@@ -12,6 +12,11 @@
     <main class="container mt-5">
         <div class="container mt-5">
             <h2>Đặt xe</h2>
+             <% if (locals.flash) { %>
+                <div class="alert alert-<%= locals.flash.type %>">
+                    <%= locals.flash.message %>
+                </div>
+            <% } %>
             <div class="row g-4">
                 <div class="col-md-5">
                 <div class="box">

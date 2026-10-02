@@ -164,9 +164,9 @@ const getRentalById= async (rentalId,user)=>{
 const confirmRental= async (rentalId,admin)=>{
     const transaction= await sequelize.transaction();
     try {
-        if(admin.role !== 'admin'){
+        if(!admin ||admin.role !== 'admin'){
             const err= new Error('Bạn không có quyền xác nhận đơn thuê');
-            err.statusCode=401;
+            err.statusCode=403;
             throw err;
         }
 
@@ -189,6 +189,14 @@ const confirmRental= async (rentalId,admin)=>{
                 err.statusCode=400;
                 throw err;
             }
+        const now = new Date();
+        const startDate = new Date(rental.start_date);
+
+        if (startDate > now) {
+            const err = new Error('Chưa đến ngày bắt đầu thuê');
+            err.statusCode = 400;
+            throw err;
+        }
 
         if( rental.Car.status ==='maintenance'){
             const err= new Error('Xe không khả dụng để thuê');
@@ -228,17 +236,14 @@ const confirmRental= async (rentalId,admin)=>{
         }
 
         await rental.update(
-            {status:'active', admin_id: admin.id},
+            {status:'active'},
             {transaction}
         );
-        rental.Car.status='rented';
-        await rental.Car.save({transaction});
 
         await transaction.commit();
         return {
             message:'Xác nhận đơn thuê thành công',
             rental_id: rental.id,
-            adminId: rental.admin_id,
         };
     } catch (err) {
         await transaction.rollback();
@@ -344,7 +349,7 @@ const rentalComplete= async (rentalId,user)=>{
     }
 }
 
-const rentalCreate= async (userId,data)=>{
+const rentalCreate= async (userId,data, user)=>{
     const {
         customer_name,
         customer_phone,
@@ -416,17 +421,22 @@ const rentalCreate= async (userId,data)=>{
         err.statusCode=400;
         throw err;
     }
-   const rental = await Rental.create({
+    const dataToCreate= {
         user_id: userId,
         car_id,
         customer_name: userId ? data.customer_name : customer_name,
         customer_phone: userId ? data.customer_phone : customer_phone,
         customer_email: userId ? data.customer_email : customer_email,
-        start_date,
+        start_date, 
         end_date,
         total_price,
-        status
-    });
+        status,
+    }
+    if(user && user.role === 'admin') {
+        dataToCreate.admin_id = user.id;
+    }
+
+    const rental = await Rental.create(dataToCreate);
 
     return rental;
 }

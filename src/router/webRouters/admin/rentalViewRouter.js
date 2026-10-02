@@ -15,8 +15,6 @@ router.post('/:id/confirm',  rentalViewController.confirmRental);
 
 router.post('/:id/cancel',  rentalViewController.cancelRental);
 
-router.post('/:id/complete', rentalViewController.completeRental);
-
 router.get('/:id/payment',  paymentViewController.paymentPage);
 
 router.post('/:id/payment',  paymentViewController.createPayment);
