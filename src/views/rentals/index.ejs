@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="/styles/style.css">
+    <style>
+        body {
+            background: #f5f6f8;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <%- include('../partials/header') %>
+    </header>
+    <main>
+        <div class="container mb-4">
+
+            <h2 class="mb-4"><%= title %></h2>
+
+            <div class="mb-4 border rounded p-3 bg-white">
+                <form method="GET" action="/rentals" class="row g-3">
+                    <%- include('../partials/search-bar',{keyword: keyword, search_name: 'keyword' }) %>
+                        <div class="my-2 row g-2">
+                            <div class="col-md-3">
+                                <select class="form-select" name="status" id="status">
+                                    <option value="">Chọn trạng thái</option>
+                                    <option value="active" <%=query.status==='active' ? 'selected' :'' ;%>>Hoạt
+                                        động</option>
+                                    <option value="pending" <%=query.status==='pending' ? 'selected' :'';%>>Chờ
+                                        duyệt</option>
+                                    <option value="completed" <%=query.status==='completed' ? 'selected' :'';%>
+                                        >Hoàn thành</option>
+                                    <option value="cancelled" <%=query.status==='cancelled' ? 'selected' :'';%>
+                                        >Huỷ</option>
+                                </select>
+                            </div>
+
+
+                            <div class="col-md-3">
+                                <a href="/admin/rentals" class="btn btn-secondary w-100">
+                                    Đặt lại
+                                </a>
+                            </div>
+
+                        </div>
+                </form>
+            </div>
+            <% if (rentals.length === 0) { %>
+
+            <div class="text-center py-5">
+                <h5>Chưa có đơn thuê nào</h5>
+
+                <p class="text-muted">
+                    Bạn chưa có đơn thuê xe nào.
+                </p>
+            </div>
+
+        <% } else { %>
+            <% rentals.forEach(rental => { %>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">
+                                 <%= rental.car?.name || 'N/A' %>
+                            </h5>
+                             <% if (rental.status === 'pending') { %>
+
+                                <span class="badge bg-warning text-dark">
+                                    Chờ xác nhận
+                                </span>
+
+                            <% } else if (rental.status === 'active') { %>
+
+                                <span class="badge bg-primary">
+                                    Đang thuê
+                                </span>
+
+                            <% } else if (rental.status === 'completed') { %>
+
+                                <span class="badge bg-success">
+                                    Hoàn thành
+                                </span>
+
+                            <% } else if (rental.status === 'cancelled') { %>
+
+                                <span class="badge bg-danger">
+                                    Đã hủy
+                                </span>
+
+                            <% } %>
+                        </div>
+                        <div class="mb-2">
+
+                            <strong>Thời gian thuê:</strong>
+
+                            <%= rental.startDate.toLocaleDateString('vi-VN') %>
+
+                            →
+
+                            <%= rental.endDate.toLocaleDateString('vi-VN') %>
+
+                        </div>
+
+                         <div class="mb-3">
+
+                            <strong>Tổng tiền:</strong>
+
+                            <%= Number(rental.totalPrice).toLocaleString('vi-VN') %> ₫
+
+                        </div>
+                        <div class="text-end">
+
+                            <a
+                                href="/rentals/<%= rental.id %>"
+                                class="btn btn-sm btn-primary"
+                            >
+                                Xem chi tiết
+                            </a>
+
+
+                            <% if (rental.status === 'pending') { %>
+                                <form action="/rentals/<%= rental.id %>/cancel" method="POST" style="display:inline-block;">
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-danger"
+                                >
+                                    Hủy đơn
+                                </button>
+                                </form>
+                            <% } %>
+
+                        </div>
+                    </div>
+                    
+                </div> 
+                <% }) %>
+        <% } %>
+         <% if (totalPages > 1) { %>
+
+            <%- include('../partials/pagination', {
+                totalPages,
+                currentPage,
+                pagination
+            }) %>
+
+        <% } %>
+        </div>
+         
+    </main>
+    <%-include('../partials/footer')  %>
+</body>
+
+</html>

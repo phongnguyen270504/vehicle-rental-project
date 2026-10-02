@@ -1,82 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý đơn thuê</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="/styles/style.css">
     <style>
-        body{
-            margin:0;
+        body {
+            margin: 0;
 
-            min-height:100vh;
+            min-height: 100vh;
 
-            display:flex;
+            display: flex;
         }
 
         /* MAIN */
-        .main{
-            flex:1;
+        .main {
+            flex: 1;
 
-            background:#f5f6f8;
+            background: #f5f6f8;
 
-            display:flex;
+            display: flex;
 
-            flex-direction:column;
+            flex-direction: column;
 
             min-width: 0;
         }
-        </style>
+    </style>
 </head>
+
 <body>
-    <%- include('../partials/sidebar')  %>
-    <div class="main">
-        <%- include('../partials/topbar') %>
-        <div class="content">
-            <h2>Quản lý đơn thuê</h2>
-            <!-- Content for managing rentals -->
-             <a href="/admin/rentals/create" class="btn btn-primary mb-3">
-            + Tạo đơn hàng
-        </a>
-            <div class="table-box table-responsive">
-            <table class="table align-middle">
-                <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Car</th>
-                        <th>Start Date</th>
-                        <th>End Date</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% rentals.forEach(rental => { %>
-                        <tr>
-                            <td><%= rental.id %></td>
-                            <td><%= rental.car ? rental.car.name : 'N/A' %></td>
-                            <td><%= rental.startDate.toLocaleDateString() %></td>
-                            <td><%= rental.endDate.toLocaleDateString() %></td>
-                            <td><%= rental.status %></td>
-                            <td>
-                                <a href="/admin/rentals/<%= rental.id %>" class="btn btn-sm btn-info">View</a>
-                                <a href="/admin/rentals/<%= rental.id %>/edit" class="btn btn-sm btn-primary">Edit</a>
-                                <a href="/admin/rentals/<%= rental.id %>/delete" class="btn btn-sm btn-danger">Delete</a>
-                            </td>
-                        </tr>
-                    <% }) %>
-                </tbody>
-            </table>
+    <%- include('../partials/sidebar') %>
+        <div class="main">
+            <%- include('../partials/topbar') %>
+                <div class="content">
+                    <h2>Quản lý đơn thuê</h2>
+                    <!-- Content for managing rentals -->
+                    <a href="/admin/rentals/create" class="btn btn-primary mb-3">
+                        + Tạo đơn hàng
+                    </a>
+                    <div class="table-box">
+                        <div class="my-2">
+                            <form action="/admin/rentals" method="get">
+                                <%- include('../partials/search-bar', { search_name: 'keyword' , keyword: keyword }) %>
+                                <div class="my-2 row g-2">
+                                    <div class="col-md-3">
+                                        <select class="form-select" name="status" id="status">
+                                            <option value="">Chọn trạng thái</option>
+                                            <option value="active" <%=query.status==='active' ? 'selected' :'' ;%>>Hoạt
+                                                động</option>
+                                            <option value="pending" <%=query.status==='pending' ? 'selected' :'';%>>Chờ
+                                                duyệt</option>
+                                            <option value="completed" <%=query.status==='completed' ? 'selected' :'';%>
+                                                >Hoàn thành</option>
+                                            <option value="cancelled" <%=query.status==='cancelled' ? 'selected' :'';%>
+                                                >Huỷ</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <select class="form-select" name="sort">
+                                            <option value="updated_desc"
+                                                <%= query.sort === 'updated_desc' || !query.sort ? 'selected' : '' %>>
+                                                Cập nhật gần nhất
+                                            </option>
+
+                                            <option value="created_desc"
+                                                <%= query.sort === 'created_desc' ? 'selected' : '' %>>
+                                                Tạo gần nhất
+                                            </option>
+
+                                            <option value="start_asc"
+                                                <%= query.sort === 'start_asc' ? 'selected' : '' %>>
+                                                Ngày thuê gần nhất
+                                            </option>
+
+                                            <option value="total_desc"
+                                                <%= query.sort === 'total_desc' ? 'selected' : '' %>>
+                                                Tổng tiền cao nhất
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <label class="form-label mb-0">
+                                                    Từ ngày
+                                                </label>
+
+                                                <input
+                                                    type="date"
+                                                    class="form-control"
+                                                    name="start_date"
+                                                    value="<%= query.start_date || '' %>"
+                                                >
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <label class="form-label mb-0">
+                                                    Đến ngày
+                                                </label>
+
+                                                <input
+                                                    type="date"
+                                                    class="form-control"
+                                                    name="end_date"
+                                                    value="<%= query.end_date || '' %>"
+                                                >
+                                            </div>
+                                        </div>
+                                    </div>
+                                    </div>
+                                    <div class="text-end">
+                                        <a href="/admin/rentals"
+                                        class="btn btn-secondary">
+                                            Đặt lại
+                                        </a>
+                                    </div>
+
+                                </div>
+                                
+                            </form>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Id</th>
+                                        <th>Car</th>
+                                        <th>Start Date</th>
+                                        <th>End Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% rentals.forEach(rental=> { %>
+                                        <tr>
+                                            <td>
+                                                <%= rental.id %>
+                                            </td>
+                                            <td>
+                                                <%= rental.car ? rental.car.name : 'N/A' %>
+                                            </td>
+                                            <td>
+                                                <%= rental.startDate.toLocaleDateString() %>
+                                            </td>
+                                            <td>
+                                                <%= rental.endDate.toLocaleDateString() %>
+                                            </td>
+                                            <td>
+                                                <%= rental.status %>
+                                            </td>
+                                            <td>
+                                                <a href="/admin/rentals/<%= rental.id %>"
+                                                    class="btn btn-sm btn-info">View</a>
+                                                <a href="/admin/rentals/<%= rental.id %>/edit"
+                                                    class="btn btn-sm btn-primary">Edit</a>
+                                                <a href="/admin/rentals/<%= rental.id %>/delete"
+                                                    class="btn btn-sm btn-danger">Delete</a>
+                                            </td>
+                                        </tr>
+                                        <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- Pagination -->
+                        <%- include('../partials/pagination', { totalPages, currentPage, pagination }) %>
+                    </div>
+                </div>
         </div>
-            <!-- Pagination -->
-            <%- include('../partials/pagination', 
-            { totalPages, 
-            currentPage,
-            pagination
-            }) %>
-        </div>
-    </div>
-    <%- include('../partials/script') %>
+        <%- include('../partials/script') %>
 </body>
+
 </html>

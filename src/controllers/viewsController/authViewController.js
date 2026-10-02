@@ -1,12 +1,17 @@
 const authService = require('../../services/authService');
 
+const { validatePassword, 
+        validateConfirmPassword,
+        validateEmail, 
+        validateRequirePassword,
+    }= require('../../validations/validateUser');
 const loginPage= async (req,res)=>{
     try {
         res.render('auth/login.ejs',{
             title: 'Đăng nhập',
-            error: null,
-            email: null,
-            password: null,
+            errorMessage: null,
+            errors: {},
+            data: {},
         });
     } catch (err) {
         console.error(err);
@@ -17,6 +22,20 @@ const loginPage= async (req,res)=>{
 const login= async (req,res)=>{
     try {
         const { email, password } = req.body;
+        const errors= {};
+        
+        errors.email= validateEmail(email);
+        errors.password= validateRequirePassword(password);
+        const hasError = Object.values(errors).some(error => error);
+        if(hasError)
+        {
+            return res.status(400).render('auth/login.ejs',{
+            errorMessage: null,
+            title: 'Đăng nhập',
+            errors,
+            data: {...req.body},
+        });
+        }
         const user = await authService.loginUser(email, password);
         req.session.user = {
             id: user.id,
@@ -32,9 +51,9 @@ const login= async (req,res)=>{
         console.error(err);
         res.render('auth/login.ejs',{
             title: 'Đăng nhập',
-            error: err.message || 'Server error',
-            email: req.body.email,
-            password: req.body.password
+            errors:{},
+            errorMessage: err.message || 'Server error',
+            data: {...req.body},
         });
     }
 }
@@ -58,10 +77,9 @@ const registerPage= async (req,res)=>{
     try {
         res.render('auth/register.ejs',{
             title: 'Đăng ký',
-            error: null,
-            email: null,
-            password: null,
-            confirmPassword: null
+            errorMessage: null,
+            errors: {},
+            data: {}
         });
     } catch (err) {
         console.error(err);
@@ -72,6 +90,22 @@ const registerPage= async (req,res)=>{
 const register= async (req,res)=>{
     try {
         const { email, password, confirmPassword } = req.body;
+        const errors ={};
+        errors.email= validateEmail(email.toLowerCase().trim());
+        errors.password= validatePassword(password);
+        errors.confirmPassword= validateConfirmPassword(password,confirmPassword);
+        
+        const hasError= Object.values(errors).some(error => error);
+        if(hasError)
+        {
+            return res.status(400).render('auth/register.ejs',{
+            errorMessage: null,
+            title: 'Đăng ký',
+            errors,
+            data: {...req.body},
+            });
+        }
+
         const user = await authService.registerUser(email, password, confirmPassword);
         req.session.user = {
             id: user.id,
@@ -80,15 +114,72 @@ const register= async (req,res)=>{
         };
         res.redirect('/cars');
     } catch (err) {
-        console.error(err);
-        res.render('auth/register.ejs',{
+        console.log(err);
+        
+        res.status(err.statusCode || 500).render('auth/register.ejs',{
             title: 'Đăng ký',
-            error: err.message || 'Server error',
-            email: req.body.email,
-            password: req.body.password,
-            confirmPassword: req.body.confirmPassword
+            errorMessage: err.message || 'Server error',
+            errors:{},
+            data: {...req.body},
         });
     }
+}
+
+const changePasswordPage= async (req, res) => {
+    res.render('auth/change-password', {
+        title: 'Đổi mật khẩu',
+        successMessage: null,
+        errorMessage: null,
+        errors: {},
+    });
+    
+}
+const changePassword= async (req, res) => {
+    try {
+         const userId = req.session.user.id;
+
+    const {
+            currentPassword,
+            newPassword,
+            confirmPassword
+        } = req.body;
+         const errors = {
+            currentPassword: validatePassword(currentPassword),
+            newPassword: validatePassword(newPassword),
+            confirmPassword: validateConfirmPassword(
+                newPassword,
+                confirmPassword
+            )
+        };
+
+        const hasError=Object.values(errors).some(error => error);
+
+        if(hasError)
+        {
+            return res.render('auth/change-password', {
+                title: 'Đổi mật khẩu',
+                successMessage: null,
+                errorMessage: 'Đổi mật khẩu thất bại',
+                errors,
+                currentPassword,
+                newPassword,
+                confirmPassword
+            });
+        }
+
+    await authService.changePassword(userId, currentPassword, newPassword);
+
+    res.status(200).json({message: 'Đổi mật khẩu thành công'});
+
+    } catch (err) {
+         res.status(err.statusCode || 500).render('auth/change-password', {
+                title: 'Đổi mật khẩu',
+                successMessage: null,
+                errorMessage: err.message,
+                errors: {},
+        });
+    }
+    
 }
 
 module.exports={
@@ -97,4 +188,6 @@ module.exports={
     logout, 
     registerPage, 
     register,
+    changePassword,
+    changePasswordPage,
 };

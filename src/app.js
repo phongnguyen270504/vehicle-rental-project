@@ -15,7 +15,8 @@ const userRouter= require('./router/userRoute');
 const carViewRouter= require('./router/webRouters/carViewRouter');
 const authViewRouter= require('./router/webRouters/authViewRouter');
 const adminViewRouter= require('./router/webRouters/admin/indexRouter');
-const rentalViewRouter= require('./router/webRouters/rentalViewRouter');;
+const rentalViewRouter= require('./router/webRouters/rentalViewRouter');
+const userViewRouter= require('./router/webRouters/userViewRouter');
 
 const app = express();
 
@@ -50,7 +51,8 @@ app.use('/admin',
     authSessionsMiddleware.isAdmin, 
     adminViewRouter);
 
-app.use('/rentals', authSessionsMiddleware.isLogin, rentalViewRouter);
+app.use('/rentals',  rentalViewRouter);
+app.use('/profile', userViewRouter);
 
 app.use((req, res) => {
     res.status(404).json({ message: 'Not found' });

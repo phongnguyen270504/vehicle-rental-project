@@ -17,13 +17,15 @@
 
         /* MAIN */
         .main{
-            flex:1;
+            flex: 1;
 
-            background:#f5f6f8;
+            background: #f5f6f8;
 
-            display:flex;
+            display: flex;
 
-            flex-direction:column;
+            flex-direction: column;
+
+            min-width: 0;
         }
         </style>
 </head>
@@ -31,7 +33,7 @@
     <%- include('../partials/sidebar') %>
     <div class="main">
         <%- include('../partials/topbar') %>
-        <div class="container mt-4">
+        <div class="container py-4">
             <h2>Chi tiết đơn hàng</h2>
             <div class="card p-1 mb-3">
                 <div class="card-body">
@@ -39,6 +41,15 @@
                 <p>
                     <strong>Mã đơn hàng:</strong> <%= rental.id %>
                 </p>
+                </div>
+                <div class="mb-3">
+                    <p><strong>Họ và tên: </strong><span class=""><%= rental.customerName %></span></p>
+                </div>
+                <div class="mb-3">
+                    <p><strong>Số điện thoại: </strong><span class=""><%= rental.customerPhone %></span></p>
+                </div>
+                <div class="mb-3">
+                    <p><strong>Email: </strong><span class=""><%= rental.customerEmail %></span></p>
                 </div>
                 <div class="mb-3"> 
                     <p><strong>Ngày bắt đầu:</strong> <%= rental.startDate ? rental.startDate.toLocaleDateString() : 'N/A' %></p>
@@ -51,7 +62,8 @@
                 </div>
                 </div>
             </div>
-            <div class="table-box table-responsive">
+            <div class="table-box ">
+                <div class="table-responsive rounded">
             <table class="table table-hover align-middle">
                 <thead>
                     <tr>
@@ -70,6 +82,7 @@
 
                             <img
                                 src="https://images.unsplash.com/photo-1503376780353-7e6692767b70"
+                                class="img-fluid rounded"
                             >
 
                         </td>
@@ -86,26 +99,32 @@
                 <p><strong>Tổng cộng:</strong> <%= rental.totalPrice %> VND</p>
             </div>
          </div>
-         
+         </div>
          <div>
             <% if(rental.status ==='pending') { %>
             <form action="/admin/rentals/<%= rental.id %>/confirm" method="POST" style="display:inline-block;">
-                <button class="btn btn-primary">
+                <button class="btn btn-primary my-2">
                 Duyệt đơn hàng
             </button>
             </form>
             <form action="/admin/rentals/<%= rental.id %>/cancel" method="POST" style="display:inline-block;">
-                <button class="btn btn-danger">
+                <button class="btn btn-danger my-2">
                 Hủy đơn hàng
             </button>
             </form>
             <% } %>
             <% if(rental.status === 'active')  { %>
-            <form action="/admin/rentals/<%= rental.id %>/complete" method="POST" style="display:inline-block;">
-                <button class="btn btn-primary">
+            <form action="/admin/rentals/<%= rental.id %>/complete" method="POST" style="display:inline-block;" >
+                <button class="btn btn-primary my-2">
                     Hoàn thành đơn hàng
                 </button>
             </form>
+            <% } %>
+            <% if(rental.status === 'completed')  { %>
+            
+                <a href="/admin/rentals/<%= rental.id %>/payment" class="btn btn-primary my-2">
+                    Thanh toán
+                </a>
             <% } %>
          </div>
         </div>

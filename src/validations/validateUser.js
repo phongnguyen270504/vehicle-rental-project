@@ -5,37 +5,79 @@ const validateFullname = (fullname) => {
     return null;
 }
 
-const validateEmail = (email) => {
+const validateRequireEmail = (email) => {
     if (typeof email !== 'string' || email.trim() === '') {
         return 'Email là bắt buộc';
     }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+   
+    return null;
+}
+
+
+const validateRegexEmail =(email)=>{
+     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (typeof email=== 'string' && !emailRegex.test(email)) {
         return 'Email không hợp lệ';
     }
     return null;
 }
 
+const validateEmail= (email)=>{
+    
+    let error = validateRequireEmail(email);
+
+    if (error) {
+        return error;
+    }
+
+    return validateRegexEmail(email);
+    
+}
+
 const validatePhone = (phone) => {
-    if (phone && !/^[0-9]{10}$/.test(phone)) {
+    if (typeof phone === 'string' && !/^[0-9]{10}$/.test(phone)) {
         return 'Số điện thoại phải có 10 chữ số';
     }
     return null;
 }
 
-const validatePassword = (password) => {
-    if (typeof password !== 'string' || password.trim() === '') {
-        return 'Mật khẩu là bắt buộc';
+const validateLenghtPassword= (password,length)=>{
+    if(password.length < length)
+    {
+        return `Mật khẩu phải có ít nhất ${length} ký tự`;
     }
-    if (password.length < 6) {
-        return 'Mật khẩu phải có ít nhất 6 ký tự';
-    }
-    return null;
+    return null
 }
 
+const validateRequirePassword= (password) =>{
+    
+    if (typeof password !== 'string' || password.trim() === '') 
+    {
+        return 'Mật khẩu là bắt buộc';
+    }
+    return null
+}
+
+const validatePassword = (password) => {
+    let error= validateRequirePassword(password);
+    
+    if(error)
+    {
+        return error
+    }
+    
+    return validateLenghtPassword(password,6);
+}
+
+
+
 const validateConfirmPassword = (password, confirmPassword) => {
-    if (typeof confirmPassword !== 'string' || confirmPassword.trim() === '') {
-        return 'Xác nhận mật khẩu là bắt buộc';
+    
+    let error= validateRequirePassword(password);
+    
+    if(error)
+    {
+        return error
     }
     if (password !== confirmPassword) {
         return 'Xác nhận mật khẩu không khớp';
@@ -118,4 +160,13 @@ const validateUpdateUser = (userData) => {
 module.exports = {
     validateCreateUser,
     validateUpdateUser,
+    validateRequirePassword,
+    validateLenghtPassword,
+    validatePassword,
+    validateFullname,
+    validateConfirmPassword,
+    validatePhone,
+    validateEmail,
+    validateRegexEmail,
+    validateRequireEmail
 };

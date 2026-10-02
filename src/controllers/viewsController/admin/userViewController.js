@@ -1,12 +1,28 @@
 const userService = require('../../../services/userService');
 const {formatDate} = require('../../../utils/date');
-const { validateUpdateCar } = require('../../../validations/validateCars');
+const { validateCreateUser, validateUpdateUser } = require('../../../validations/validateUser');
 const UserDetailPage = async (req, res) => {
     try {
         const userId = req.params.id;
         const userDetails = await userService.getUserById(userId);
         res.render('admin/user-detail.ejs', {
             title: 'Chi tiết người dùng',
+            userDetails,
+            formatDate
+        });
+    }
+    catch (err) {
+        console.error(err);
+        res.status(err.statusCode || 500).json({ message: err.message || 'Server error' });
+    }
+}
+
+const adminDetailPage =async (req, res)=>{
+     try {
+        const userId = req.session.user.id;
+        const userDetails = await userService.getUserById(userId);
+        res.render('admin/user-detail.ejs', {
+            title: 'Thông tin của tôi',
             userDetails,
             formatDate
         });
@@ -40,7 +56,7 @@ const manageUsersPage = async (req, res) => {
 }
 const createUserPage = async (req, res) => {
     try {
-        res.render('users/create-user.ejs', {
+        res.render('admin/create-user.ejs', {
             title: 'Tạo người dùng mới',
             errorMessage: null,
             errors: {},
@@ -56,8 +72,9 @@ const createUserPage = async (req, res) => {
 const createUser= async (req, res) =>{
     const userData = req.body;
     const errors = validateCreateUser(userData);
-    if (Object.keys(errors).length > 0) {
-        return res.status(400).render('users/create-user.ejs', {
+    const hasError= Object.values(errors).some(error=>error);
+    if (hasError) {
+        return res.status(400).render('admin/create-user.ejs', {
             title: 'Tạo người dùng mới',
             errorMessage: 'Dữ liệu không hợp lệ',
             errors: errors,
@@ -83,7 +100,7 @@ const updateUserPage = async (req, res) =>{
     try{
         const userId = req.params.id;
         const user = await userService.getUserById(userId);
-        res.render('users/update-user.ejs', {
+        res.render('admin/update-user.ejs', {
             title: 'Cập nhật thông tin người dùng',
             editUser: user,
             errorMessage: null,
@@ -100,6 +117,17 @@ const updateUser = async (req, res) =>{
 
     try{
         const userId = req.params.id;
+        const errors= validateUpdateUser({...req.body});
+        const hasError= Object.values(errors).some(error=>error)
+        if(hasError)
+        {
+            return res.status(400).render('admin/update-user.ejs', {
+            title: 'Cập nhật thông tin người dùng',
+            errorMessage: 'Dữ liệu không hợp lệ',
+            errors: errors,
+            editUser: { ...req.body, id: req.params.id }
+        });
+        }
         await userService.updateUser(userId, req.body);
         
         return res.redirect(`/admin/users/${userId}/edit`);
@@ -147,5 +175,6 @@ module.exports = {
     updateUserPage, 
     updateUser, 
     deleteUser,
-    restoreUser
+    restoreUser,
+    adminDetailPage,
 };

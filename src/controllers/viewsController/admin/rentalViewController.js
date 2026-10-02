@@ -14,6 +14,7 @@ const manageRentalsPage= async (req, res) => {
             totalPages: results.totalPages,
             currentPage: results.currentPage,
             pagination: results.pagination,
+            keyword: req.query.keyword || '',
         });
    } catch (err) {
         console.error(err);
@@ -108,8 +109,9 @@ const rentalCreate = async (req, res)=>{
 
 const rentalDetailPage= async (req, res) => {
     try {
-        const rentalId= req.params.id;
-        const rental= await rentalService.getRentalById(rentalId);
+        const rentalId= Number(req.params.id);
+        const user = req.session.user;
+        const rental= await rentalService.getRentalById(rentalId,user);
         res.render('admin/rental-detail.ejs',{
             title: 'Chi tiết đơn thuê',
             rental

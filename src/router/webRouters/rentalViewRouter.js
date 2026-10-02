@@ -5,7 +5,11 @@ const rentalViewController = require('../../controllers/viewsController/rentalVi
 
 const authSessionMiddleware= require('../../middlewares/auth.session.middleware');
 
+router.get('/',rentalViewController.getMyRentals);
 
+router.get('/:id', rentalViewController.getRentalId);
+
+router.post('/:id/cancel',rentalViewController.rentalCancel)
 
 
 

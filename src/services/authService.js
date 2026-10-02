@@ -3,16 +3,6 @@ const bcrypt = require('bcrypt');
 const User = require('../models/User');
 
 const loginUser= async (email, password) => {
-   if(typeof email !== 'string' || !email.trim()){
-        const err = new Error('Email không được để trống');
-        err.statusCode = 400;
-        throw err;
-    }
-    if(typeof password !== 'string' || !password.trim()){
-        const err = new Error('Mật khẩu không được để trống');
-        err.statusCode = 400;
-        throw err;
-    }
 
     email = email.trim().toLowerCase();
     const user = await User.findOne({ where: { email } });
@@ -36,49 +26,49 @@ const loginUser= async (email, password) => {
     return user; 
 }
 
-const registerUser = async (email, password, confirmPassword) => {
+const changePassword= async (user_id, currentPassword, newPassword )=>
+{
+    const user = await User.findByPk(user_id);
     
-    if(typeof email !== 'string' || !email.trim()){
-        const err = new Error('Email không được để trống');
+     if (!user) {
+        const err = new Error('Người dùng không tồn tại');
+        err.statusCode = 404;
+        throw err;
+    }
+
+     const isMatch = await bcrypt.compare(
+        currentPassword,
+        user.hashpass
+    );
+    if(!isMatch)
+    {
+        const err = new Error('Mật khẩu hiện tại không đúng');
         err.statusCode = 400;
         throw err;
     }
 
-    email = email.trim().toLowerCase();
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        const err = new Error('Email không hợp lệ');
+    if (currentPassword === newPassword) {
+        const err = new Error(
+            'Mật khẩu mới phải khác mật khẩu hiện tại'
+        );
         err.statusCode = 400;
         throw err;
     }
-    if(typeof password !== 'string' || !password.trim()){
-        const err = new Error('Mật khẩu không được để trống');
-        err.statusCode = 400;
-        throw err;
-    }
+
+    const hashpass = await bcrypt.hash(newPassword, 10);
+
+     user.hashpass = hashpass;
+
+    await user.save();
+
+    return user;
+}
+
+const registerUser = async (email, password, confirmPassword) => {
     
-    if(typeof confirmPassword !== 'string' || !confirmPassword.trim()){
-        const err = new Error('Xác nhận mật khẩu không được để trống');
-        err.statusCode = 400;
-        throw err;
-    }
-    if (password !== confirmPassword) {
-        const err = new Error('Mật khẩu xác nhận không khớp');
-        err.statusCode = 400;
-        throw err;
-    }
-    if(password.length < 8){
-        const err = new Error('Mật khẩu phải có ít nhất 8 ký tự');
-        err.statusCode = 400;
-        throw err;
-    }
-    if(password.length > 100){
-        const err = new Error('Mật khẩu không được quá 100 ký tự');
-        err.statusCode = 400;
-        throw err;
-    }
     
     const existingUser = await User.findOne({ where: { email } });
+    
     if (existingUser) {
         const err = new Error('Nguời dùng đã tồn tại');
         err.statusCode = 400;
@@ -109,5 +99,6 @@ const generateToken = (user) => {
 module.exports = { 
     loginUser , 
     registerUser, 
-    generateToken
+    generateToken,
+    changePassword,
 };

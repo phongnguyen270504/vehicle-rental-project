@@ -33,9 +33,9 @@
     <div class="login-box">
         <h2>Đăng nhập</h2>
         <div class="mb-3">
-            <% if (error) { %>
+            <% if (errorMessage) { %>
                 <div class="alert alert-danger">
-                    <%= error %>
+                    <%= errorMessage %>
                 </div>
             <% } %>
         </div>
@@ -47,8 +47,11 @@
                 id="email" 
                 name="email"
                 placeholder="Nhập email" 
-                value="<%= typeof email !== 'undefined' ? email : '' %>"
+                value="<%= typeof data.email !== 'undefined' ? data.email : '' %>"
                  >
+                 <% if (errors.email) { %>
+                            <div class="text-danger"><%= errors.email %></div>
+                <% } %>
             </div>
             <div class="mb-3">
                 <label class="form-label" for="password">Mật khẩu</label>
@@ -57,9 +60,12 @@
                 id="password" 
                 name="password" 
                 placeholder="Nhập mật khẩu" 
-                value="<%= typeof password !== 'undefined' ? password : '' %>"
-                required
+                value="<%= typeof data.password !== 'undefined' ? data.password : '' %>"
+               required
                 >
+                <% if (errors.password) { %>
+                    <div class="text-danger"><%= errors.password %></div>
+                <% } %>
             </div>
             <button type="submit" class="btn btn-primary">Đăng nhập</button>
         </form>
